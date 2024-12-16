@@ -8,16 +8,16 @@ Il S.O. offre dei servizi di base quali:
 - esecuzione di programmi
 - operazioni I/O
 - gestione del file system
-- comunicazioni fra processi
+- comunicazione fra processi
 - rilevamento e gestione errori
 - assegnazione delle risorse
 - protezione e sicurezza
 
 ## Le system call
 
-Sono l'interfaccia fra i processi e il S.O., ad ognuna di esse è associato un numero che viene utilizzato come identificatore per determinare il codice kernel da eseguire. Solitamente il compilatore di un linguaggio include una _runtime support interface_, ovvero l'interfaccia che invoca le system call e, una volta eseguite, restituisce il return status e i return values. In questo modo i dettagli implementativi sono nascosti al chiamante.
+Sono l'interfaccia fra i processi e il S.O., ad ognuna di esse è associato un numero che viene utilizzato come identificatore per determinare il codice kernel da eseguire. Solitamente il compilatore di un linguaggio include una _runtime support interface_, ovvero l'interfaccia che invoca le system call e, una volta eseguite, restituisce il _return status_ e gli eventuali _return values_. Grazie all'interfaccia i dettagli implementativi sono nascosti al chiamante.
 
-Le system call eseguono in modalità kernel, ci sono 3 metodi per passar loro parametri.
+Le system call eseguono in modalità kernel, ci sono 3 metodi per passare loro parametri:
 
 - tramite registri
 - tramite memoria
@@ -25,11 +25,11 @@ Le system call eseguono in modalità kernel, ci sono 3 metodi per passar loro pa
 
 ### Passaggio tramite memoria
 
-Si imposta l'indirizzo dei parametri in un registro e si invoca la system call. Questa deve controllare la legittimità dell'indirizzo che contiene i parametri e che si trova solitamente nello spazio utente.
+Si imposta l'indirizzo dei parametri in un registro e si invoca la _system call_. Quest'ultima deve controllare la legittimità dell'indirizzo che contiene i parametri, i quali si trovano solitamente nello spazio utente.
 
 ### Passaggio parametri sullo stack
 
-Si imposta i parametri per la system call sullo stack e si genera una trap. Il S.O. passa in modalità kernel per eseguire la system call e una volta eseguita ritorna in modalità utente.
+Si impostano i parametri per la _system call_ nello _stack_ e si genera una _trap_. Il S.O. passa in modalità kernel per eseguire la _system call_ e, una volta eseguita, ritorna in modalità utente.
 
 ### Tipi di system call
 
@@ -49,13 +49,13 @@ Spesso i **programmi di sistema** forniscono un ambiente per lo sviluppo/esecuzi
 
 Tutte le componenti del S.O. risiedono nel kernel e sono implementate da procedure in grado di comunicare in maniera diretta le une con le altre.
 
-Questa struttura massimizza l'efficienza, ma la progettazione, realizzazione e il debugging diventano complessi. Dato che tutte le componenti operano in modalità kernel, il sistema diventa vulnerabile a errori, malfunzionamenti e attacchi.
+Questa struttura massimizza l'efficienza, ma la progettazione, realizzazione e il debugging diventano complessi. Inoltre, dato che tutte le componenti operano in modalità kernel, il sistema diventa vulnerabile a errori, malfunzionamenti e attacchi.
 
 ### Struttura stratificata
 
 Il S.O. è stratificato a livelli che offrono funzionalità omogenee. Ogni livello dispone di in interfaccia con cui i livelli dello strato superiore possono interagire. Ogni livello può invocare le funzionalità dei livelli inferiori.
 
-Questa configurazione predilige la modularità delle parti, ma le performance degradano a causa dell'uso forzato delle interfacce.
+Questa configurazione predilige la modularità delle parti, ma le performance degradano a causa dell'uso forzato di interfacce.
 
 ### Struttura a microkernel
 
