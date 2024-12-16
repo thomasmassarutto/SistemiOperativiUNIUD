@@ -1,0 +1,11 @@
+# Ignora tutti i file
+*
+
+# Tranne i file Markdown
+!*.md
+
+# Tranne le directory 
+!*/
+
+# Tranne yaml per configurazione esportazione
+!*.yaml
