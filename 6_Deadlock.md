@@ -2,21 +2,21 @@
 
 ## Il problema del deadlock
 
-Un insieme di processi si trova in **deadlock** se ogni processo dell'insieme è in attesa di un _evento_ che solo un altro processo dell'insieme può provocare.
+Un insieme di processi si trova in **deadlock** se ogni processo dell'insieme è in attesa di un _evento_ che solo un altro processo appartenente allo stesso insieme può provocare.
 
 Quando non esiste un protocollo o delle regole da seguire per competere per la risorsa è possibile che nessun processo possa proseguire in quanto non detiene l'uso esclusivo delle risorse necessarie per portare a termine l'esecuzione.
 
-Le risorse in questione possono essere _logiche_ (buffer, file,...) o _fisiche_ (CPU, ram,...) e possono essere _preemptable_ (lo stato può essere ripristinato dopo la sottrazione della risorsa) o _non preemptable_ (la sottrazione della risorsa causa perdita di dati).
+Le risorse in questione possono essere _logiche_ (buffer, file,...) o _fisiche_ (CPU, ram,...) e possono essere **preemptable** (lo stato può essere ripristinato dopo la sottrazione della risorsa) o **non preemptable** (la sottrazione della risorsa causa perdita di dati).
 
-In una macchina sono presenti diversi tipi di risorsa ($R_{1}, R_{2}, R_{m}$) e per ogni risorsa $R_{i}$ esistano $W_{i} \geq 1$ istanze.
+In una macchina sono presenti diversi tipi di **risorsa** ($R_{1}, R_{2}, R_{m}$) e per ogni risorsa $R_{i}$ esistano $W_{i} \geq 1$ **istanze**.
 
-Per utilizzare una risorsa ogni processo deve adottare un protocollo d'uso: _richiesta_, _utilizzo_, _rilascio_. Se non sono disponibili istanze di risorse, il processo può attenderne la disponibilità per un tempo illimitato o limitato, il processo può fallire/terminare, ...
+Per utilizzare una risorsa ogni processo deve adottare un protocollo d'uso: _richiesta_, _utilizzo_, _rilascio_. Se non sono disponibili _istanze_ di risorse, il processo può attenderne la disponibilità per un tempo illimitato o limitato, può fallire/terminare, ...
 
 I problemi insorgono quando sono presenti _attese reciproche_.
 
 ## Condizioni necessarie
 
-Sono presenti 4 condizioni **necessarie**, ma non indipendenti, perché ci sia la possibilità di un deadlock:
+Perché ci sia un _deadlock_, sono **necessarie** 4 condizioni non indipendenti: 
 
 1. **Mutua esclusione**: devono essere coinvolte _risorse_ utilizzabili da un solo _processo_ alla volta.
 2. **Possesso e attesa**: un _processo_ detentore di almeno una _risorsa_ deve essere in _attesa_ di un altra _risorsa_ per proseguire.
@@ -35,17 +35,22 @@ Per rappresentare la situazione è utile utilizzare il **grafo di allocazione de
   - di **richiesta**: $P_{i} \rightarrow R_{j}$ indica che un processo $P_{i}$ è in attesa di ottenere un istanza della risorsa $R_{j}$
   - di **assegnazione** $R_{j} \rightarrow P_{i}$ indica che una risorsa $R_{j}$ è assegnata al processo $P_{i}$
 
-Se il grafo _non_ contiene cicli allora _non ci può essere_ deadlock, ma se ci sono cicli _potrebbe_ verificarsi un deadlock. In particolare se per i nodi risorsa interessati ci sono solo istanze singole si ha deadlock, mentre se vi sono più istanze l'esistenza del ciclo è una condizione _necessaria, ma non sufficiente_ per il verificarsi del deadlock. Grafi ciclici e attesa circolare non sono concetti equivalenti in ambito deadlock.
+Se il grafo _non_ contiene cicli, allora _non_ può verificarsi un deadlock. Al contrario, se nel grafo sono presenti dei cicli, il deadlock _potrebbe_ verificarsi. In particolare:
+
+- Se i nodi risorsa coinvolti hanno solo istanze singole, si verifica sicuramente un deadlock.
+- Se, invece, le risorse hanno più istanze, la presenza di un ciclo è una condizione necessaria ma non sufficiente per il verificarsi del deadlock.
+
+I concetti di _grafo ciclico_ e _attesa circolare_ non sono equivalenti nell'ambito dei deadlock.
 
 ## Osservazioni
 
-LA successione e la temporizzazione delle sequenze richiesta/uso/rilascio della risorse è importante: l'occorrenza del deadlock dipende dalla velocità relativa dei due processi. Dato che è il S.O. a effettuare lo scheduling dei processi, può operare in modo da scegliere sequenze sicure che non portano al deadlock, tuttavia questo compito non è semplice in quanto richiede di conoscere in anticipo l'operato dei processi.
+La successione e la temporizzazione delle sequenze richiesta/uso/rilascio della risorse è importante: l'occorrenza del deadlock dipende dalla velocità relativa dei due processi. Dato che è il S.O. a effettuare lo scheduling dei processi, può operare in modo da scegliere sequenze sicure che non portano al deadlock, tuttavia questo compito non è semplice in quanto richiede di conoscere in anticipo l'operato dei processi.
 
 ## Gestione del deadlock
 
 I principali approcci al problema del deadlock mirano a prevenire il verificarsi del deadlock in maniera statica (**deadlock prevention**), evitare il verificarsi del deadlock in maniera dinamica (**deadlock avoidance**) e a rilevare e risolvere le situazioni di deadlock (**deadlock detection & recovery**). Le prime due cercano di evitare il deadlock, mentre la terza tecnica rileva la presenza di un deadlock e effettua un azione di ripristino.
 
-Alternativamente si può ignorare il problema e confidare che non si verifichi (**ostrich algorithm**). Questa strategia funziona sufficientemente bene per i sistemi commerciali non critici in cui le risorse sono abbondanti, il deadlock è poco frequente e il costo di un eventuale prevenzione/rilevazione non sarebbe giustificato. Nel caso una situazione del genere si verifichi si esegue un reboot.
+Alternativamente si può ignorare il problema e confidare che non si verifichi (**ostrich algorithm**). Questa strategia funziona sufficientemente bene per i sistemi commerciali non critici in cui le risorse sono abbondanti, il deadlock è poco frequente e il costo di un eventuale prevenzione/rilevazione non sarebbe giustificato. Nel caso si verifichi una situazione di deadlock si esegue un reboot.
 
 ### Prevenire il deadlock
 
@@ -67,7 +72,7 @@ Adottare questo tipo di soluzione porta ad un basso utilizzo delle risorse che t
 
 Se un processo richiede una risorsa non disponibile (per la quale dovrebbe attendere), gli si sottraggono tutte le risorse per evitare che la sua attesa blocchi risorse ad altri processi. Quando tutte le risorse richieste saranno disponibili, allora il processo sarà riavviato. Alternativamente le risorse possono essere sottratte al processo che già le detiene per assegnarle al processo richiedente.
 
-Questo tipo di approccio può essere utilizzato solo per risorse non preemptable.
+Questo tipo di approccio può essere utilizzato solo per risorse _preemptable_.
 
 #### Evitare attesa circolare
 
@@ -79,15 +84,15 @@ I difetti di questo approccio sono che tende a rallentare l'esecuzione sottoutil
 
 Queste tecniche comportano _decisioni dinamiche_ per le quali si presuppone l'avere a disposizione informazioni supplementari sui processi e sulle risorse da loro richieste. Utilizzando queste informazioni si possono applicare algoritmi che individuano le situazioni pericolose che **potrebbero** evolversi in deadlock per poi decidere se concedere o meno le risorse.
 
-Di base si assume di conoscere a priori il numero massimo di richieste di ogni tipo di risorsa (ogni processo dichiara di quante e quali risorse avrà bisogno _al massimo_). Si tiene traccia dello stato del sistema con le metriche di: numero risorse disponibili, numero risorse allocate, massime richieste da parte di ogni processo.
+Di base si assume di conoscere a priori il numero massimo di richieste di ogni tipo di risorsa (ogni processo dichiara di quante e quali risorse avrà bisogno _al massimo_). Si tiene traccia dello stato del sistema con le metriche di: numero _risorse disponibili_, numero _risorse allocate_ e _massime richieste_ da parte di ogni processo.
 
 Prima di concedere una risorsa il S.O. verifica che il sistema rimanga in uno **stato safe**.
 
 #### Stati safe, unsafe e deadlock
 
-Uno _stato_ è detto **safe** se esiste almeno una _sequenza safe di esecuzione_ di **tutti** i processi. Se ciò non è possibile allora la lo stato è **unsafe** e _potrebbero_ verificarsi deadlock.
+Uno _stato_ è detto **safe** se esiste almeno una _sequenza safe di esecuzione_ di _tutti_ i processi. Se ciò non è possibile allora la lo stato è **unsafe** e _potrebbero_ verificarsi deadlock.
 
-Una _sequenza_ di esecuzione di processi $\langle P_{1}, \dots , P_{n} \rangle$ è safe se per ogni $i$ le risorse che il processo $P_{i}$ può ancora richiedere non sono superiori alla somma delle risorse disponibili e di quelle detenute da tutti i processi $P_{j} per $j<i$.
+Una _sequenza_ di esecuzione di processi $\langle P_{1}, \dots , P_{n} \rangle$ è safe se per ogni $i$ le risorse che il processo $P_{i}$ può ancora richiedere non superano la somma delle risorse disponibili e di quelle detenute da tutti i processi $P_{j}$ per $j<i$.
 
 Se le richieste di $P_{i}$ non possono essere soddisfatte, allora $P_{i}$ attenderà fino alla terminazione di tutti i processi $P_{j}$ (con $j<i$). $P_{j}$ otterrà le risorse solo quando tutti i $P_{j}$ saranno terminati.
 
@@ -116,7 +121,7 @@ Le strutture dati introdotte sono:
 - la matrice `allocation[m,n]`: `allocation[i,j]` indica il numero di risorse di `j` che il processo `i` detiene
 - la matrice `need[n,m]`: `need[i,j]` indica il massimo numero di risorse di `j` che il processo `i` _potrebbe_ ancora necessitare. ($need_{(i,j)} = max_{(i,j)} - allocation_{(i,j)}$)
 
-##### verifica di safeness
+##### Verifica di safeness
 
 Testa la _safeness_ di uno stato.
 
@@ -153,11 +158,11 @@ Se $P_{i}$ richiede delle risorse il sistema:
   - `allocation[i][k] := allocation[i][k] + request[i][k]`
   - `need[i][k] := need[i][k] - request[i][k]`
   
-A questo punto il sistema determina la _safeness_: se lo stato è safe le risorse vengono effettivamente concesse a $P_{i}$ altrimenti lo stato viene ripristinato a quello precedente (quindi safe) e $P_{i}$ deve attendere.
+A questo punto il sistema determina la _safeness_: se lo stato è safe le risorse vengono effettivamente concesse a $P_{i}$ altrimenti lo stato viene ripristinato a quello precedente (quindi _safe_) e $P_{i}$ deve attendere.
 
 ### Rilevare il deadlock
 
-Il sistema è lasciato libero di evolvere e raggiungere, eventualmente, uno stato non sicuro. Vengono utilizzati degli algoritmi per individuare la presenza di situazioni di deadlock e riportare il sistema in uno stato safe.
+Il sistema è lasciato libero di evolvere e raggiungere, eventualmente, uno stato non sicuro. Vengono poi utilizzati degli algoritmi per individuare la presenza di situazioni di deadlock e riportare il sistema in uno stato safe.
 
 #### Risorse a istanza singola
 
@@ -219,7 +224,7 @@ Attivarlo troppo spesso causa eccessivo overhead, mentre attivandolo troppo spor
 Rilevato un deadlock il sistema può decidere di **terminare**:
 
 - tutti i processi coinvolti: soluzione semplice, ma costosa in quanto devono poi essere riavviati
-- un processo alla volta finché la situazione di deadlock persiste: soluzione più costosa in quanto dopo la terminazione di un processo bisogna rilevare se un deadlock persiste, inoltre bisogna decidere con che priorità terminare i processi (priorità di classe, mole di lavoro già eseguito, numero di risorse detenute)
+- un processo alla volta finché la situazione di deadlock persiste: soluzione più costosa in quanto dopo la terminazione di ogni processo bisogna rilevare se il deadlock persiste, inoltre bisogna decidere con che priorità terminare i processi (priorità di classe, mole di lavoro già eseguito, numero di risorse detenute, ...)
 
 Generalmente queste opzioni si evitano in quanto si causa ulteriore overhead al sistema, possibile perdita di lavoro già fatto e possibili inconsistenze delle risorse modificate dal processo.
 
