@@ -2,19 +2,19 @@
 
 ## Struttura di un disco
 
-Un disco è formato da **settori**, ovvero le unità più piccole di informazioni che possono essere lette/scritte sul disco. Per efficienza sono raggruppati dal punto di vista logico in **cluster**. Un file occupa sempre almeno un cluster.
+Un disco è formato da **settori**, ovvero le unità più piccole di informazioni che possono essere lette/scritte sul disco. Per efficienza sono raggruppati dal punto di vista logico in **cluster** e un file occupa sempre almeno un _cluster_.
 
-Per accedere ad un settore bisogna specificare la superficie, la traccia e il settore.
+Per accedere ad un settore bisogna specificare la _superficie_, la _traccia_ e il _settore_.
 
-La **struttura logica** di un disco rappresenta il modo in cui i dati sono organizzati e gestiti. Il disco viene visto come un **vettore lineare di blocchi logici** in cui ogni blocco logico è l'unità minima di trasferimento tra il disco e la memoria. Può corrispondere a un settore fisico o a un cluster (insieme di settori). Un blocco (o cluster) è l'unità minima di trasferimento e può corrispondere a uno o più settori fisici sul disco.
+La **struttura logica** di un disco rappresenta il modo in cui i dati sono organizzati e gestiti. Il disco viene visto come un **vettore lineare di blocchi logici** in cui ogni _blocco logico_ è l'unità minima di trasferimento tra il disco e la memoria e generalmente corrisponde a un _settore fisico_ o a un _cluster_. Un _blocco_ (o _cluster_) è l'unità minima di trasferimento.
 
-Il _vettore lineare di blocchi logici_ è mappato sequenzialmente sui settori del disco e la numerazione procede gerarchicamente:
+Il _vettore lineare di blocchi logici_ è mappato sequenzialmente sui _settori_ del disco e la numerazione procede gerarchicamente:
 
-1. **Settori**: numerazione all'interno di una traccia.
-2. **Tracce**: ciascun piatto del disco è diviso in tracce circolari.
-3. **Cilindri**: tracce con lo _stesso raggio_, presenti su _diversi_ piatti, formano un cilindro.
+1. **Settori**: segmenti più piccoli all'interno di una _traccia_
+2. **Tracce**: ciascun piatto del disco è diviso in _tracce_ circolari
+3. **Cilindri**: tracce con lo _stesso raggio_, presenti su _diversi_ piatti, formano un _cilindro_
 
-Il S.O. usa la vista logica del disco per operare di esso.
+Il S.O. usa la _vista logica_ del disco per operare di esso.
 
 Una richiesta I/O su disco prevede:
 
@@ -27,11 +27,11 @@ Una richiesta I/O su disco prevede:
 
 Sono presenti 3 componenti temporali:
 
-- **Seek time**: tempo necessario a spostare la testina sulla traccia
-- **Latency time**: tempo necessario a posizionare il settore desiderato sotto la testina
-- **Transfer time**: tempo necessario al settore per passare sotto la testina, si tratta della lettura vera e propria.
+- **Seek time**: tempo necessario a spostare la testina sulla _traccia_
+- **Latency time**: tempo necessario a posizionare il _settore_ desiderato sotto la testina
+- **Transfer time**: tempo necessario al _settore_ per passare sotto la testina, si tratta della lettura vera e propria.
 
-$Tempo\ di\ accesso= SeekTime + Latency + TransferTime$
+$\text{Tempo di accesso}= \text{SeekTime} + \text{Latency} + \text{Transfer Time}$
 
 ### Esempio tempo di accesso
 
@@ -49,13 +49,13 @@ $$
 \end{aligned}
 $$
 
-Il _seek time_ è il parametro dominante.
+Il _seek time_ è il parametro dominante: ottimizzando questo si raggiungono performance migliori.
 
 ## Algoritmi di Disk scheduling
 
 Esistono algoritmi di scheduling per i processi che accedono al disco. Dato che il _seek time_ è il parametro dominate, per minimizzare il tempo di accesso totale conviene ridurre il tempo dello spostamento della testina.
 
-Si usa la **banda** come parametro indice di bontà per l'algoritmo: $Banda = \frac{n°\ byte\ trasferiti}{tempo}$.
+Come parametro indice di bontà per l'algoritmo si usa la **banda**: $Banda = \frac{nr \ byte \ trasferiti}{tempo}$.
 
 Negli esempi successivi verrà presa in considerazione una sequenza di accessi esempio:
 
@@ -71,7 +71,7 @@ Tramite **FCFS** le richieste vengono processate nell'ordine d'arrivo. Nella seq
 
 ### Shortest Seek Time First (SSTF)
 
-L'algoritmo di **SSTF** Seleziona la richiesta con il minimo spostamento della testina rispetto alla posizione attuale. Migliore **FCFS**, ma non è ottimo e vi è possibilità di starvation.
+L'algoritmo di **SSTF** Seleziona la richiesta con il minimo spostamento della testina rispetto alla posizione attuale. Migliora **FCFS**, ma non è ottimo e vi è possibilità di starvation.
 
 `65` `67` `37` `14` `98` `122` `124` `183`
 
@@ -79,7 +79,7 @@ Lo spostamento della testina è di 236 tracce.
 
 ### SCAN
 
-Con **SCAN** la testina parte da un estremità del disco e si sposta verso l'altra servendo tutte le richieste correnti. Arrivata nell'altra estremità riparte in direzione opposta servendo tutte le richieste. Viene detto anche _algoritmo dell'ascensore_.
+Con **SCAN** la testina parte da un estremità del disco e si sposta verso l'altra servendo tutte le richieste correnti. Arrivata nell'altra estremità, riparte in direzione opposta servendo tutte le richieste rimanenti. Viene detto anche _algoritmo dell'ascensore_.
 
 `37` `14` `*0*` `65` `67` `98` `122` `124` `183`
 
@@ -105,12 +105,12 @@ Lo spostamento della testina è di 322 tracce.
 
 ### N-step-SCAN
 
-La coda viene partizionata in più code di lunghezza massima $N$. Quando una coda viene processata gli accessi in arrivo riempiono le altre code che verranno servite in uno scan successivo.
+La coda viene partizionata in più code di lunghezza massima $N$. Quando una coda viene processata gli accessi in arrivo riempiono le altre code che verranno servite in uno _scan_ successivo.
 
-Quando $N$ tende ad un numero molto grande, l'algoritmo degenera in **SCAN**,  se $N = 1$, l'algoritmo degenera in **FCFS**.
+Quando $N$ tende ad un numero molto grande, l'algoritmo degenera in **SCAN**, invece  se $N = 1$, l'algoritmo degenera in **FCFS**.
 
-L'algoritmo **FSCAN** funziona similmente, ma con due sole code.
+L'algoritmo **FSCAN** funziona similmente, ma con 2 sole code.
 
 ### Last In First Out (LIFO)
 
-Gli accessi vengono schedulati in base all'ordine inverso di arrivo. Questo approccio è utile nel caso di accessi con elevata località, molto vicini tra loro, ma soffre i starvation.
+Gli accessi vengono schedulati in base all'ordine inverso di arrivo. Questo approccio è utile nel caso di accessi con _elevata località_, molto vicini tra loro, ma soffre i starvation.
