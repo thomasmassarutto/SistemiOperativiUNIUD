@@ -35,6 +35,6 @@ Questi formati generano un file leggibile:
   - ⚠️ genera warning alla linea 4232
 - `epub` 
   - ⚠️ necessita flag `--mathml` altrimenti i tag \frac{}{} non vengono convertiti
-  - ⚠️ necessita del flag --metadata title="..."
+  - ⚠️ necessita del flag --metadata title="...". 
 - `docx` 
   - ⚠️ non genera la Table Of Contents
