@@ -43,9 +43,9 @@ $\text{Tempo di accesso}= \text{SeekTime} + \text{Latency} + \text{Transfer Time
 
 $$
 \begin{aligned}
-    T_{accesso} &= T_{seek} + \frac{rotazione\ media}{velocità\ rotazione} + \frac{dimensione\ blocco}{velocità\ trasferimento}\\
-    &= 5_{[ms]} + \frac{\frac{1}{2}}{166_{[rps]}} + \frac{512_{[Byte]}}{40_{[MB/s]}}\\
-    &= 5_{[ms]} + 3_{[ms]} + 0.0000125_{[ms]} = 8.0000125_{[ms]}\\
+    T_{accesso} &= T_{seek} + \frac{\text{rotazione media}}{\text{velocità rotazione}} + \frac{\text{dimensione blocco}}{\text{velocità trasferimento}}\\
+    &= 5_{\text{[ms]}} + \frac{\frac{1}{2}}{166_{\text{[rps]}}} + \frac{512_{\text{[Byte]}}}{40_{\text{[MB/s]}}}\\
+    &= 5_{\text{[ms]}} + 3_{\text{[ms]}} + 0.0000125_{\text{[ms]}} = 8.0000125_{\text{[ms]}}
 \end{aligned}
 $$
 
@@ -53,11 +53,6 @@ Il _seek time_ è il parametro dominante: ottimizzando questo si raggiungono per
 
 ## Algoritmi di Disk scheduling
 
-Esistono algoritmi di scheduling per i processi che accedono al disco. Dato che il _seek time_ è il parametro dominate, per minimizzare il tempo di accesso totale conviene ridurre il tempo dello spostamento della testina.
-
-Come parametro indice di bontà per l'algoritmo si usa la **banda**: $Banda = \frac{nr \ byte \ trasferiti}{tempo}$.
-
-Negli esempi successivi verrà presa in considerazione una sequenza di accessi esempio:
 
 `98` `183` `37` `122` `14` `124` `65` `67`
 

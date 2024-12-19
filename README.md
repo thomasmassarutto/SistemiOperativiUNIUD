@@ -24,7 +24,6 @@ Per ora da warning, non capisco in che documento ci deve essere un errore di sin
 ## TODO
 
 - ⚠️ completare esempi in `5_Sincronizzazione.md`
-- verificare dove l'esportazione genera warnings
 - capire come far funzionare `config.yaml`
 
 ## Formati output testati
@@ -32,9 +31,8 @@ Per ora da warning, non capisco in che documento ci deve essere un errore di sin
 Questi formati generano un file leggibile:
 
 - `pdf`
-  - ⚠️ genera warning alla linea 4232
 - `epub` 
-  - ⚠️ necessita flag `--mathml` altrimenti i tag \frac{}{} non vengono convertiti
+  - ⚠️ necessita flag `--mathml` altrimenti i tag \frac{}{} non vengono visualizzati bene
   - ⚠️ necessita del flag --metadata title="...". 
 - `docx` 
   - ⚠️ non genera la Table Of Contents
