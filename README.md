@@ -11,7 +11,7 @@ Per convertire con Pandoc:
 Documentazione Pandoc: <https://pandoc.org/MANUAL.html>
 
 Nella repo è presente un file `.yaml` per personalizzare le esportazioni.
-`pandoc -s input.md -o output.pdf --metadata-file=config.yaml ----mathml`
+`pandoc -s input.md -o output.pdf --metadata-file=config.yaml --mathml`
 
 ## Creazione di un file unico 
 
