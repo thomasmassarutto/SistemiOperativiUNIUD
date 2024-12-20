@@ -1,3 +1,5 @@
+\newpage
+
 # CPU scheduling
 
 ## Scheduling dei processi

@@ -1,3 +1,5 @@
+\newpage
+
 # Il file system
 
 Un **file system** è il sottosistema per la gestione dei file ed è la parte più visibile del S.O. Il suo scopo è fornire meccanismi per _registrazione_, _accesso_ e _protezione_ di dati e programmi, deve inoltre virtualizzare i dispositivi di memorizzazione permanente. Tramite il _file system_, il S.O. ha il dovere di fornire una _visione logica_ e dei metodi di accesso uniformi ai diversi mezzi di memorizzazione.

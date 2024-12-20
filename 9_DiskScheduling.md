@@ -1,3 +1,5 @@
+\newpage
+
 # Disk scheduling
 
 ## Struttura di un disco

@@ -1,3 +1,5 @@
+\newpage
+
 # Sincronizzazione
 
 ## Il problema della sezione critica
