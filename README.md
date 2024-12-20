@@ -33,6 +33,6 @@ Questi formati generano un file leggibile:
 - `pdf`
 - `epub` 
   - ⚠️ necessita flag `--mathml` altrimenti i tag \frac{}{} non vengono visualizzati bene
-  - ⚠️ necessita del flag --metadata title="...". 
+  - ⚠️ necessita del flag --metadata title="..."
 - `docx` 
   - ⚠️ non genera la Table Of Contents
