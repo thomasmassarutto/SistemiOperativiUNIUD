@@ -1,8 +1,11 @@
 # Ignora tutti i file
 *
 
-# Tranne i file Markdown
+# Tranne i file Markdow
 !*.md
+
+# Tranne i file c
+!*.c
 
 # Tranne le directory 
 !*/
