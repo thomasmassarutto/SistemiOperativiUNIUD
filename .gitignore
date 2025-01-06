@@ -12,3 +12,6 @@
 
 # Tranne yaml per configurazione esportazione
 !*.yaml
+
+# Tranne Makefile
+!Makefile
