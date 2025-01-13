@@ -1,8 +1,12 @@
-# Appunti di sistemi operativi
+# Appunti e esercizi di sistemi operativi
 
-Appunti del corso di sistemi operativi A.A. 2023/2024
+Appunti e esercizi del corso di sistemi operativi A.A. 2023/2024
 
-## Conversione di un singolo file
+## Appunti 
+
+Gli appunti del corso si trovano nella cartella `Appunti`
+
+### Conversione di un singolo file
 
 Per convertire con Pandoc:
 
@@ -13,7 +17,7 @@ Documentazione Pandoc: <https://pandoc.org/MANUAL.html>
 Nella repo è presente un file `.yaml` per personalizzare le esportazioni.
 `pandoc -s input.md -o output.pdf --metadata-file=config.yaml --mathml`
 
-## Creazione di un file unico 
+### Creazione di un file unico 
 
 Creazione di un file unico:
 
@@ -21,12 +25,12 @@ Creazione di un file unico:
 
 Per ora da warning, non capisco in che documento ci deve essere un errore di sintassi $\LaTeX$.
 
-## TODO
+### TODO
 
 - ⚠️ completare esempi in `5_Sincronizzazione.md`
 - capire come far funzionare `config.yaml`
 
-## Formati output testati
+### Formati output testati
 
 Questi formati generano un file leggibile:
 
@@ -36,3 +40,11 @@ Questi formati generano un file leggibile:
   - ⚠️ necessita del flag --metadata title="..."
 - `docx` 
   - ⚠️ non genera la Table Of Contents
+
+## Esercizi di introduzione a `C`
+
+Gli esercizi di introduzione a `C` sono presenti nella cartella `IntroC`.
+
+## Esercizi di `C` per sistemi operativi
+
+Gli esercizi di `C` per sistemi operativi sono presenti nella cartella `SistemiOperativiC`
