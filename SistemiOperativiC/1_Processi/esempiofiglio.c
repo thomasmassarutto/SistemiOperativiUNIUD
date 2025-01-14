@@ -8,7 +8,7 @@ int main(){
     pid_t processoFiglio;
     pid_t terminato;
 
-    int valoreFiglio;
+    int valoreFiglio; //conterra il valore di ritorno del figlio
 
     printf("Sono il padre, PID: %d\n", getgid());
 
@@ -24,10 +24,10 @@ int main(){
     }else {// valoreFiglio non e assegnato, sono il padre
         printf("Sono il padre, PID: %d.\nAttendo 3 secondi che mio figlio termini\n", getgid());
         sleep(3);
+        
         // a questo punto il figlio dovrebbe aver finito
         terminato = wait(&valoreFiglio);
-
-        if (terminato == -1){// gestione erroe del figlio
+        if (terminato == -1){// gestione errore del figlio
             printf("Il figlio ha generato un errore\n");
             exit(-1);
         }
