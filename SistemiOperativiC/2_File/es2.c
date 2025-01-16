@@ -13,9 +13,7 @@ int main(int argc, char *argv[]){
     ssize_t numbytes;
     char buf[BUFFSIZE];
 
-    printf("ciao, sono \"%s\" \n", argv[0]);
-
-    printf("Argc %d\n", argc);
+    printf("ciao, sono \"%s\" \ncopio \"%s\" in \"%s\"\n", argv[0], argv[1], argv[2]);
 
     if (argc != 3){
         printf("No 3 args given\n");
@@ -49,6 +47,9 @@ int main(int argc, char *argv[]){
 
 
     }while(numbytes > 0);// se non ci sono più byte da leggere si ferma
+
+    close(fdin);
+    close(fdout);
 
 
     return(EXIT_SUCCESS);
