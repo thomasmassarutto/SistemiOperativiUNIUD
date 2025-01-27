@@ -56,7 +56,7 @@ Alternativamente si può ignorare il problema e confidare che non si verifichi (
 
 ### Prevenire il deadlock
 
-Queste strategie cercano di impedire che _almeno una_ delle condizioni necessarie al deadlock si verifichi.
+Queste strategie cercano di impedire che almeno una delle condizioni necessarie al deadlock si verifichi.
 
 #### Evitare mutua esclusione
 
@@ -66,7 +66,7 @@ Dato che molte risorse non sono condivisibili questo approccio spesso non è ris
 
 #### Evitare possesso e attesa
 
-Si fa in modo che un processo che _detiene_ risorse non ne possa _richiederne_ altre. Per fare ciò ogni processo deve richiedere tutte le risorse che serviranno prima di eseguire un'altra system call e ad ogni processo è permesso di richiedere risorse solo se non ne detiene.
+Si fa in modo che un processo che detiene risorse non possa richiederne altre. Per fare ciò ogni processo deve richiedere tutte le risorse che serviranno prima di eseguire un'altra system call e ad ogni processo è permesso di richiedere risorse solo se non ne detiene.
 
 Adottare questo tipo di soluzione porta ad un basso utilizzo delle risorse che tendono ad essere detenute più tempo del necessario. Inoltre può comportare starvation: un processo che chiede molte risorse contemporaneamente deve sperare che si rendano disponibili tutte nello stesso istante.
 
@@ -84,17 +84,17 @@ I difetti di questo approccio sono che tende a rallentare l'esecuzione sottoutil
 
 ### Evitare il deadlock
 
-Queste tecniche comportano _decisioni dinamiche_ per le quali si presuppone l'avere a disposizione informazioni supplementari sui processi e sulle risorse da loro richieste. Utilizzando queste informazioni si possono applicare algoritmi che individuano le situazioni pericolose che **potrebbero** evolversi in deadlock per poi decidere se concedere o meno le risorse.
+Queste tecniche comportano decisioni dinamiche per le quali si presuppone l'avere a disposizione informazioni supplementari sui processi e sulle risorse da loro richieste. Utilizzando queste informazioni si possono applicare algoritmi che individuano le situazioni pericolose che **potrebbero** evolversi in deadlock per poi decidere se concedere o meno le risorse.
 
-Di base si assume di conoscere a priori il numero massimo di richieste di ogni tipo di risorsa (ogni processo dichiara di quante e quali risorse avrà bisogno _al massimo_). Si tiene traccia dello stato del sistema con le metriche di: numero _risorse disponibili_, numero _risorse allocate_ e _massime richieste_ da parte di ogni processo.
+Di base si assume di conoscere a priori il numero massimo di richieste di ogni tipo di risorsa (ogni processo dichiara di quante e quali risorse avrà bisogno _al massimo_). Si tiene traccia dello stato del sistema con le metriche di: numero risorse disponibili, numero risorse allocate e massime richieste da parte di ogni processo.
 
 Prima di concedere una risorsa il S.O. verifica che il sistema rimanga in uno **stato safe**.
 
 #### Stati safe, unsafe e deadlock
 
-Uno _stato_ è detto **safe** se esiste almeno una _sequenza safe di esecuzione_ di _tutti_ i processi. Se ciò non è possibile allora la lo stato è **unsafe** e _potrebbero_ verificarsi deadlock.
+Uno stato è detto **safe** se esiste almeno una **sequenza safe di esecuzione** di tutti i processi. Se ciò non è possibile allora la lo stato è **unsafe** e _potrebbero_ verificarsi deadlock.
 
-Una _sequenza_ di esecuzione di processi $\langle P_{1}, \dots , P_{n} \rangle$ è safe se per ogni $i$ le risorse che il processo $P_{i}$ può ancora richiedere non superano la somma delle risorse disponibili e di quelle detenute da tutti i processi $P_{j}$ per $j<i$.
+Una sequenza di esecuzione di processi $\langle P_{1}, \dots , P_{n} \rangle$ è safe se per ogni $i$ le risorse che il processo $P_{i}$ può ancora richiedere non superano la somma delle risorse disponibili e di quelle detenute da tutti i processi $P_{j}$ per $j<i$.
 
 Se le richieste di $P_{i}$ non possono essere soddisfatte, allora $P_{i}$ attenderà fino alla terminazione di tutti i processi $P_{j}$ (con $j<i$). $P_{j}$ otterrà le risorse solo quando tutti i $P_{j}$ saranno terminati.
 
@@ -106,7 +106,7 @@ Utile nel caso in cui le risorse esistano in istanze singole.
 
 Ogni processo deve dichiarare all'inizio tutte le possibili risorse di cui avrà bisogno.
 
-Si sfrutta il _grafo di allocazione delle risorse_ arricchito con il **claim edge**: un arco $P_{i} \dashrightarrow R_{j}$ indica che il processo $P_{i}$ in futuro potrebbe richiedere la risorsa $R_{j}$. Nel momento in cui la _richiesta_ avviene si trasforma in un _arco di richiesta_ $P_{i} \rightarrow R_{j}$. L'assegnazione avviene normalmente $R_{j} \rightarrow P_{i}$, ma l'arco di assegnamento viene riconvertito nell'arco di reclamo $P_{i} \dashrightarrow R_{j}$.
+Si sfrutta il _grafo di allocazione delle risorse_ arricchito con il **claim edge**: un arco $P_{i} \dashrightarrow R_{j}$ indica che il processo $P_{i}$ in futuro potrebbe richiedere la risorsa $R_{j}$. Nel momento in cui la richiesta avviene si trasforma in un _arco di richiesta_ $P_{i} \rightarrow R_{j}$. L'assegnazione avviene normalmente $R_{j} \rightarrow P_{i}$, ma l'arco di assegnamento viene riconvertito nell'arco di reclamo $P_{i} \dashrightarrow R_{j}$.
 
 Una richiesta viene soddisfatta solo se la conversione da arco di reclamo a arco di assegnamento non introduce cicli nel grafo.
 
@@ -133,19 +133,18 @@ Vengono definiti due vettori ausiliari `work[m]` e `finish[m]`
 - `finish[i] := false`
 
 1. Ricerca di un processo $P_{i}$ idoneo tale che:
+  - `finish[i] == false`
+  - `need[i][j] <= work[j]` ($\forall j \in {1, \dots, m}$)
+  Se tale processo $P_{i}$ non esiste vai al passo 3
 
-- `finish[i] == false`
-- `need[i][j] <= work[j]` ($\forall j \in {1, \dots, m}$)
-
-Se tale processo $P_{i}$ non esiste vai al passo 3
 2. Simulazione del completamento:
   
-- `work := work + allocation`
-- `finish[i] == true`
-  
-Vai al passo 1
+  - `work := work + allocation`
+  - `finish[i] == true`
+  Vai al passo 1
+
 3. Verifica dello stato
-Se `finish[i] == true` per ogni `i` allora lo stato è _safe_, altrimenti è _unsafe_.
+  Se `finish[i] == true` per ogni `i` allora lo stato è _safe_, altrimenti è _unsafe_.
 
 ##### Richiesta risorse
 
@@ -198,20 +197,17 @@ Vengono introdotti due vettori:
   - altrimenti `finish[i] = false`
 
 1. Trova un processo $P_{i}$ tale che:
+  - `finish[i] = false` (non completato)
+  - `request[i][j] <= work[j]`  (tutte le risorse richieste possono essere assegnate)
+  Se nessun processo soddisfa queste condizioni vai a passo 3
 
-- `finish[i] = false` (non completato)
-- `request[i][j] <= work[j]`  (tutte le risorse richieste possono essere assegnate)
-
-Se nessun processo soddisfa queste condizioni vai a passo 3
 2. Simulazione del completamento:
+  - `work[j] := work[j] + allocation[i][j]`
+  - `finish[i] == true`
+  Vai al passo 1
 
-- `work[j] := work[j] + allocation[i][j]`
-- `finish[i] == true`
-
-Vai al passo 1
 3. Verifica presenza deadlock
-
-Se `finish[i] == false` per qualche `i` allora c'è un deadlock che coinvolge il processo $P_{i}$
+  Se `finish[i] == false` per qualche `i` allora c'è un deadlock che coinvolge il processo $P_{i}$
 
 Questo algoritmo ha complessità $O(m \times n^{2})$
 
@@ -230,7 +226,7 @@ Rilevato un deadlock il sistema può decidere di **terminare**:
 
 Generalmente queste opzioni si evitano in quanto si causa ulteriore overhead al sistema, possibile perdita di lavoro già fatto e possibili inconsistenze delle risorse modificate dal processo.
 
-Una soluzione è fare **prelazione sulle risorse**: viene selezionato un processo _vittima_ a cui viene revocato l'uso di una risorsa. Questo può avvenire tramite _rollback_ il processo viene ripristinato ad uno stato consistente precedente oppure può avvenire tramite terminazione e successivo riavvio.
+Una soluzione è fare **prelazione sulle risorse**: viene selezionato un processo vittima a cui viene revocato l'uso di una risorsa. Questo può avvenire tramite _rollback_ il processo viene ripristinato ad uno stato consistente precedente oppure può avvenire tramite terminazione e successivo riavvio.
 
 Adottare questa tecnica significa stabilire una politica per decidere quali risorse sottrarre a quali processi evitando che la vittima sia sempre la stessa (potrebbe causare starvation).
 
