@@ -496,7 +496,46 @@ In questo caso la situazione è asimmetrica e sono presenti 2 varianti di soluzi
 
 #### Priorità ai lettori
 
-TODO
+```C
+int readcount = 0; // num. di lettori attivi
+semaphore semW = 1, mutex = 1, extra = 1;
+```
+
+- Il semaforo `semW` permette l'accesso alla risorsa da parte di un scrittore 
+- Il semaforo `mutex` blocca la variabile `readcount` per un lettore
+- Il semaforo `extra` impedisce l'uso del semaforo `semW` da parte di più scrittori contemporaneamente.
+
+Il codice del lettore:
+
+```C
+void lettore() {
+    wait(mutex); // blocca la variabile readcount
+    readcount++;
+    if (readcount==1) wait(semW); // blocca eventuali scrittori
+    signal(mutex);
+    /*letture dati*/
+    wait(mutex); // blocca la variabile readcount 
+    readcount--;
+    if (readcount==0) signal(semW); // sblocca eventuali scritori
+    signal(mutex);
+}
+```
+
+La variabile `readcount` può essere modificata da un solo lettore alla volta. La priorità ai lettori è data dal fatto che gli scrittori vengono subito bloccati se `readcount` sia 1 e possono venire sbloccati solo se `readcount` ridiventa 0, ovvero se tutti i lettori abbandonalo la zona critica.
+
+Il codice dello scrittore:
+
+```C
+void scrittore() {
+    wait(extra); // blocca altri scrittori
+    wait(semW); // blocca altri scrittori ed eventualmente scrittori
+    /*scrittura dati*/
+    signal(semW);
+    signal(extra);
+}
+```
+Il semaforo 
+
 
 #### Priorità agli scrittori
 
