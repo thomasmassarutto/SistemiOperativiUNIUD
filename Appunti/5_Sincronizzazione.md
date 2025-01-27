@@ -6,19 +6,19 @@
 
 ### Processi concorrenti
 
-Un S.O. deve gestire più processi contemporaneamente. Questi possono eseguire in maniera _logicamente indipendente_ o _cooperante_. In generale due processi compiono le loro azioni inframezzandole e utilizzando risorse condivise, tali processi necessitano di meccanismi di _sincronizzazione_, _comunicazione_ e _accesso a dati/informazioni condivise_.
+Un S.O. deve gestire più processi contemporaneamente, questi possono eseguire in maniera _logicamente indipendente_ o _cooperante_. In generale due processi compiono le loro azioni inframezzandole e utilizzando risorse condivise, tali processi necessitano di meccanismi di _sincronizzazione_, _comunicazione_ e _accesso a dati/informazioni condivise_.
 
-L'_accesso contemporaneo_ ai dati condivisi può essere problematico in quanto i dati possono essere modificati in maniera incoerente. Il S.O. deve implementare metodi che garantiscano la consistenza dei dati permettendo ad un solo processo per volta di accedere a dati condivisi. Questo deve avvenire garantendo un tempo di attesa ragionevole, con una politica che non penalizzi nessun processo e senza la creazione di attese infinite.
+L'_accesso contemporaneo_ ai dati condivisi può essere problematico in quanto i dati possono essere modificati in maniera incoerente dai processi. Il S.O. deve implementare metodi che garantiscano la consistenza dei dati permettendo ad un solo processo per volta di accedere a dati condivisi. Questo deve avvenire garantendo un tempo di attesa ragionevole, con una politica che non penalizzi nessun processo e senza la creazione di attese infinite.
 
 - **Sezione critica**: sezione di codice che legge/scrive dati condivisi.
-- **Race condition**: situazione in cui due o più processi eseguono concorrentemente sulla _sezione critica_. Il risultato dell'esecuzione dipende dall'ordine in cui i processi si alternano e perciò è fonte di inconsistenza.
+- **Race condition**: situazione in cui due o più processi eseguono concorrentemente sulla sezione critica. Il risultato dell'esecuzione dipende dall'ordine in cui i processi si alternano e perciò è fonte di inconsistenza.
 - **Mutua esclusione**: meccanismo che evita le race condition assicurando l'accesso esclusivo ai dati ad un solo processo alla volta.
 - **Deadlock**: situazione in cui due o più processi sono bloccati a causa di un attesa reciproca.
-- **Starvation**: situazione in cui ad un processo che ha richiesto la _sezione critica_ non viene mai dato il permesso di proseguire nell'esecuzione.
+- **Starvation**: situazione in cui ad un processo che ha richiesto la sezione critica non viene mai dato il permesso di proseguire nell'esecuzione.
 
 ### Esempio
 
-Due processi, uno _produttore_ e uno _consumatore_ hanno in condivisione un buffer
+Due processi, uno detto _produttore_ e uno detto _consumatore_ hanno in condivisione un buffer
 
 ``` c
 #define BUFFER_SIZE 10
@@ -64,26 +64,26 @@ counter--;
 }
 ```
 
-Anche se presi singolarmente i processi sono corretti, in caso di _esecuzione concorrente_ la gestione della variabile ```counter``` non è adeguata: ```counter++``` e ```counter--``` sono due _sezioni critiche_ in quanto, a livello assembly, sono eseguite come più operazioni basilari in successione. Un interrupt può avvenire quando solo parte delle istruzioni sono state eseguite e causare inconsistenza. Le due istruzioni sono _sezioni critiche_ e questa è una _race condition_.
+Presi singolarmente i processi sono corretti, ma in caso di _esecuzione concorrente_, la gestione della variabile ```counter``` risulta problematica: l'istruzione ```counter++``` (e rispettivamente ```counter--```) è una _sezione critica_ che a livello assembly viene eseguita come un insieme di più operazioni basilari in successione. Se avviene un interrupt quando solo parte delle istruzioni sono state eseguite si possono generare inconsistenze. Una situazione del genere è detta _race condition_.
 
 ### Soluzione generale al problema della sezione critica
 
 Una soluzione a questo problema deve garantire:
 
-- **Mutua esclusione**: un solo processo esegue la _sezione critica_.
-- **Progresso**: la decisione su chi esegue in _sezione critica_ deve avvenire entro un certo limite di tempo, senza interferenze da eventuali processi già all'interno della _sezione critica_.
-- **Attesa limitata**: non deve esserci starvation per processi che chiedono di entrare _in sezione critica_.
+- **Mutua esclusione**: un solo processo alla volta esegue la sezione critica.
+- **Progresso**: la decisione su chi esegue in sezione critica deve avvenire entro un certo limite di tempo, senza interferenze da eventuali processi già all'interno della sezione critica.
+- **Attesa limitata**: non deve esserci starvation per processi che chiedono di entrare in sezione critica.
 
 Quindi si ha che:  
 
-- Nessun processo esterno alla _sezione critica_ può impedire ad un altro di entrarvi
-- se un processo si blocca in _sezione critica_, non può interferire con l'esecuzione i altri processi
-- ogni processo resta nella _sezione critica_ solo per un tempo finito
-- se nessun processo è presente nella _sezione critica_, allora un richiedente deve poterci entrare subito
+- Nessun processo esterno alla sezione critica può impedire ad un altro di entrarvi
+- se un processo si blocca in sezione critica, non può interferire con l'esecuzione di altri processi
+- ogni processo resta nella sezione critica solo per un tempo finito
+- se nessun processo è presente nella sezione critica, allora un richiedente deve poterci entrare subito
 - tutti i processi devono evolvere
 - non bisogna fare assunzioni sul numero delle CPU
 
-Bisogna quindi progettare un protocollo che, se adottato dai processi, garantisca che l'effetto globale delle loro azioni non dipenda dall'ordine in cui queste si inframezzano. In generale questo prevede che la _sezione critica_ sia racchiusa fra due porzioni di codice dette **sezione d'ingresso** e **sezione d'uscita**. La richiesta d'accesso avviene eseguendo il codice relativo alla _sezione d'ingresso_, mentre l'esecuzione del codice relativo alla _sezione d'uscita_ permette di abbandonare la sezione critica.
+Bisogna quindi progettare un protocollo che, se adottato, garantisce che l'effetto globale delle azioni dei processi non dipende dall'ordine in cui queste si inframezzano. In generale questo prevede che la sezione critica sia racchiusa fra due porzioni di codice dette **sezione d'ingresso** e **sezione d'uscita** che permettono rispettivamente di entrare e uscire da essa.
 
 ``` pseudo
     sezione non critica
@@ -93,9 +93,11 @@ Bisogna quindi progettare un protocollo che, se adottato dai processi, garantisc
     sezione non critica
 ```
 
+Una soluzione ideale deve essere in grado di funzionare per qualsiasi insieme $\langle P_{1} \dots P_{n} \rangle$ di processi.
+
 #### Primo tentativo di soluzione
 
-Questo tentativo di soluzione utilizza una variabile `turno` per indicare chi ha diritto d'ingresso nella _sezione critica_. Il codice di un processo $P_{i}$ è il seguente:
+Questo tentativo di soluzione utilizza una variabile `turno` per indicare chi ha diritto d'ingresso nella sezione critica. Il codice di un processo $P_{i}$ è il seguente:
 
 ``` C
 int turno = 0; /* turno=i indica ok per Pi */
@@ -110,13 +112,13 @@ do {
 
 ```
 
-Pur garantendo _mutua esclusione_, non garantisce _progresso_ e _attesa limitata_: ad un processo $P_{i}$ viene conferita l'autorizzazione ad entrare in _sezione critica_ solo da un altro processo $P_{j}$ quando quest'ultimo esce dalla _sezione critica_. Se $P_{j}$ si blocca o non necessita di entrare allora il primo processo $P_{i}$ resta bloccato all'esterno della _sezione critica_. 
+Pur garantendo _mutua esclusione_, non garantisce _progresso_ e _attesa limitata_: ad un processo $P_{i}$ viene conferita l'autorizzazione ad entrare in sezione critica solo da un altro processo $P_{j}$ quando quest'ultimo esce dalla sezione critica. Se $P_{j}$ si blocca o non necessita di entrare, allora il primo processo $P_{i}$ resta bloccato all'esterno della sezione critica. 
 
-Questo tipo di implementazione non prevede che un processo entri in _sezione critica_ due volte consecutivamente.
+Questo tipo di implementazione non prevede che un processo entri in sezione critica due volte consecutivamente.
 
 #### Secondo tentativo di soluzione
 
-I processi utilizzano due flag per indicare il loro interesse ad entrare in _sezione critica_. Il codice di un processo $P_{i}$ è il seguente:
+I processi utilizzano due flag per indicare il loro interesse ad entrare in sezione critica. Il codice di un processo $P_{i}$ è il seguente:
 
 ``` C
 boolean flag[2];
@@ -139,7 +141,7 @@ Il problema di questa implementazione risiede nel fatto che il funzionamento dip
 
 #### Soluzione di Peterson
 
-Questa soluzione utilizza sia una variable `turno` che due flag per dichiarare interesse a entrare in _sezione critica_. Il codice di un processo $P_{i}$ è il seguente:
+Questa soluzione utilizza sia una variable `turno` che due flag per dichiarare interesse a entrare in sezione critica. Il codice di un processo $P_{i}$ è il seguente:
 
 ``` C
 boolean flag[2];
@@ -148,7 +150,7 @@ do {
     ....sezione non critica...
     flag[i] = true; // Pi dichiara il suo interesse
     turno = j; // assume che sia il turno dell’altro e gli offre l’occasione di entrare
-    while (flag[j] && turno==j) // basta che una non sia vera per uscire
+    while (flag[j] && turno==j)
     ; // attesa del proprio turno
     ....sezione critica...
     flag[i] = false; // fine dell’interesse
@@ -156,15 +158,15 @@ do {
 } while (1);
 ```
 
-La variabile `turno` garantisce la _mutua esclusione_, elimina la possibilità di _deadlock_ ed evita che un processo monopolizzi la _sezione critica_. 
+La variabile `turno` garantisce la _mutua esclusione_, elimina la possibilità di _deadlock_ ed evita che un processo monopolizzi la sezione critica. 
 
-L'uso dei flag evita che un processo venga chiuso fuori dalla _sezione critica_ nel caso un altro processo non gli dia l'autorizzazione, permettendo così ai processi di entrare in _sezione critica_ più volte consecutivamente.
+L'uso dei flag evita che un processo venga chiuso fuori dalla sezione critica nel caso un altro processo non gli dia l'autorizzazione, permettendo così ai processi di entrare in sezione critica più volte consecutivamente.
 
-Questa soluzione non è ottimale in quanto è presente _busy waiting_, prevede che gli aggiornamenti di `turno` e `flag[i]` avvengano con istruzioni atomiche ed è difficile da scalare nel caso dovessero esserci più programmi. Un altro problema risiede nel fatto che in processi multithread il compilatore potrebbe applicare delle ottimizzazioni che riordinano le istruzioni macchina.
+Questa soluzione non è ottimale in quanto è presente _busy waiting_, prevede che gli aggiornamenti di `turno` e `flag[i]` avvengano con istruzioni atomiche, inoltre è difficile da scalare nel caso dovessero esserci più programmi. Un altro problema risiede nel fatto che in processi multithread il compilatore potrebbe applicare delle ottimizzazioni che riordinano le istruzioni macchina.
 
 #### Soluzioni basate sulle interruzioni
 
-Questo tipo di soluzioni prevedono la disabilitazione delle interruzioni durante l'esecuzione della _sezione critica_ per evitare preemption:
+Questo tipo di soluzioni prevedono la disabilitazione delle interruzioni durante l'esecuzione della sezione critica per evitare preemption:
 
 ``` pseudo
     sezione non critica
@@ -174,9 +176,11 @@ Questo tipo di soluzioni prevedono la disabilitazione delle interruzioni durante
     sezione non critica
 ```
 
-Nei sistemi _mono processore_ garantisce mutua _esclusione_ e _atomicità_, ma gli switch di contesto inficiano l'efficienza. Nei sistemi _multi processore_ la _mutua esclusione_ non viene garantita in quanto bisognerebbe bloccare/allertare tutti gli altri processori. La _sezione critica_ resta _atomica_ (le operazioni vengono eseguite come un'unica unità indivisibile), ma non _esclusiva_.
+Nei sistemi mono processore garantisce mutua _esclusione_ e _atomicità_, ma gli switch di contesto inficiano l'efficienza. 
 
-Inoltre è possibile che si verifichino _deadlock_ a causa di operazioni di I/O eseguite durante una _sezione critica_.
+Nei sistemi multi processore la _mutua esclusione_ non viene garantita in quanto bisognerebbe bloccare/allertare tutti gli altri processori. La sezione critica resta _atomica_ (le operazioni vengono eseguite come un'unica unità indivisibile), ma non _esclusiva_.
+
+Vi è la possibilità che si verifichino _deadlock_ a causa di operazioni di I/O eseguite durante una sezione critica.
 
 #### Soluzioni con supporto hardware
 
@@ -317,7 +321,7 @@ Queste istruzioni implementano operazioni aritmetiche e booleane in maniera atom
 
 ### Busy waiting
 
-Una soluzione ottimale dovrebbe evitare che i processi in attesa di entrare nella _sezione critica_ occupino inutilmente la CPU. Per fare ciò è necessario che un processo in attesa di entrare in _sezione critica_ cambi lo stato in _waiting_ per non occupare la CPU. Questo processo può tornare _ready_ solo quando ha la possibilità di entrare nella _sezione critica_.
+Una soluzione ottimale al problema della sezione critica dovrebbe evitare che i processi in attesa di entrare nella sezione critica occupino inutilmente la CPU. Per fare ciò è necessario che un processo in attesa cambi il suo stato in _waiting_ per non occupare la CPU. Questo processo può tornare _ready_ solo quando ha la possibilità di entrare nella sezione critica.
 
 Uno strumento per raggiungere questo obiettivo è il **semaforo**.
 
@@ -358,7 +362,7 @@ signal(S){
 }
 ```
 
-Tramite queste due operazioni si può regolare l'accesso alla _sezione critica_:
+Tramite queste due operazioni si può regolare l'accesso alla sezione critica:
 
 ``` pseudo
     sezione non critica
@@ -370,15 +374,15 @@ Tramite queste due operazioni si può regolare l'accesso alla _sezione critica_:
 
 ### Tipologie di semaforo
 
-Un semaforo **mutualmente esclusivo** (**mutex**) ha la variabile `S` inizializzata a 1 ed è utilizzato per regolare l'accesso alla _sezione critica_ in maniera mutualmente esclusiva: un solo processo alla volta può entrare.
+Un semaforo **mutualmente esclusivo** (**mutex**) ha la variabile `S` inizializzata a 1 ed è utilizzato per regolare l'accesso alla sezione critica in maniera mutualmente esclusiva: un solo processo alla volta può entrare.
 
 Un semaforo di **sincronizzazione** ha la variabile `S` inizializzata a 0 e serve a sincronizzare più processi: un processo $P_{1}$ che esegue la `wait(S)` si ferma ad aspettare la `signal(S)` di un processo $P_{2}$.
 
-Un semaforo generico con `S` inizializzato a un valore $n > 1$ diventa un contatore generico in cui $n$ programmi hanno accesso alla zona critica/risorsa in comune.
+Un semaforo generico con `S` inizializzato a un valore $n > 1$ diventa un contatore generico in cui $n$ programmi hanno accesso alla sezione critica/risorsa in comune.
 
 ### Problema del busy waiting
 
-Un semaforo implementato con _busy waiting_ è detto _spinlock_. Se l'attesa è breve sono vantaggiosi in quanto non richiedono switch di contesto, ma se le attese diventano lunghe eseguire uno switch di contesto diventa preferibile al mantenere _running_ un processo che utilizza tempo di CPU facendo nulla.
+Un semaforo implementato con busy waiting è detto _spinlock_. Sono vantaggiosi in caso di attese brevi in quanto non richiedono switch di contesto, ma se le attese diventano lunghe, eseguire uno switch di contesto diventa preferibile al mantenere _running_ un processo che utilizza tempo di CPU facendo nulla.
 
 Per risolvere questo problema un processo che esegue una `wait(S)` quando `S` $\leq 0$ viene inserito in una coda di attesa al _semaforo_ e portato in stato di _waiting_. Il controllo passa allo _short term scheduler_ che permette ad uno dei processi in coda di passare allo stato di _ready_ quando viene eseguita una `signal(S)`.
 
@@ -414,19 +418,69 @@ Operazione `signal(S)` senza busy waiting:
 signal (semaforo *S){
     S->valore++;
     if (S->valore <= 0){
-        Processo *P = togli_da_lista(S->lista);
-        wakeup(P);
+        processo *P= togli_un_processo_da_lista(S->lista);
+        wakeup(&P);
     }
 }
 ```
 
 ## Tipici problemi di sincronizzazione
 
-TODO
+Esempi di vari problemi tipici.
 
 ### Produttori e consumatori
 
-TODO
+- Uno o più processi **produttori** generano dati e li inseriscono in un buffer.
+- Uno o più processi **consumatori** utilizzano dati prelevandoli da un buffer.
+- Il buffer è condiviso e si deve accedere in mutua esclusione, inoltre ha capacità limitata ad $n$, per cui un produttore non può inserire un dato in un buffer pieno. Nessun consumatore può prelevare da un buffer vuoto.
+- Ogni dato può essere prelevato una volta sola.
+
+Una possibile soluzione prevede l'implementazione di 3 semafori: un mutex per la sincronizzazione e due generici per segnalare ai produttori e ai consumatori il numero di celle che possono utilizzare nell'array.
+
+```C
+semaphore piene; // numero di celle usate
+semaphore vuote; // numero di celle libere
+semaphore mutex; // per la mutua esclusione
+
+// inizializzazione:
+piene = 0;
+vuote = MAX;
+mutex = 1;
+```
+
+Il codice del produttore è il seguente:
+
+```C
+do {
+    /*produzione del dato*/
+    wait(vuote); // c’e‘ spazio libero?
+    wait(mutex); // entro nella SC
+    ...
+    /*inserimento del dato nel buffer*/
+    ...
+    signal(mutex); // lascia la SC
+    signal(piene); // segnala nuovo dato inserito
+} while (1);
+```
+
+Prima di entrare nella sezione critica controlla che ci sia spazio libero nel buffer e dopo esserne uscito segnala ai consumatori, tramite il secondo semaforo, che nel buffer è stato inserito un nuovo dato.
+
+Il codice del consumatore è il seguente:
+
+```C
+do {
+    wait(piene); // ci sono dati?
+    wait(mutex); // entro nella SC
+    ...
+    /*prelievo un dato dal buffer*/
+    ...
+    signal(mutex); // lascio la SC
+    signal(vuote); // segnalo spazio libero
+    /*utilizzo del dato*/
+} while (1);
+```
+
+Il codice del consumatore è speculare a quello del produttore. Prima di entrare in sezione critica controlla che ci siano dati e dopo esserne uscito segnala ai produttori, tramite il secondo semaforo, che nel buffer si è liberato dello spazio.
 
 ### Lettori e scrittori
 
@@ -461,8 +515,8 @@ Questa soluzione non è _deadlock free_ e nemmeno _starvation free_: se tutti i 
 
 - controllare che la bacchetta di destra sia libera prima di prendere la bacchetta di sinistra: risolve il problema _deadlock_, ma la _starvation_ rimane possibile.
 - utilizzando lo stesso controllo, ma introducendo un ritardo casuale prima di riprovare a prendere la bacchetta: _deadlock free_, semplice da implementare e spesso usato in situazioni non critiche
-- introdurre un _mutex_ che racchiude la _sezione critica_ prima delle _wait_: _deadlock free_ e si evita _starvation_ se la coda è gestita in modo fair, ma il parallelismo ne risente.
-- introdurre un semaforo inizializzato a $S=4$ che racchiude la _sezione critica_ prima delle _wait_ permettendo solo a 4 filosofi di mangiare
+- introdurre un _mutex_ che racchiude la sezione critica prima delle _wait_: _deadlock free_ e si evita _starvation_ se la coda è gestita in modo fair, ma il parallelismo ne risente.
+- introdurre un semaforo inizializzato a $S=4$ che racchiude la sezione critica prima delle _wait_ permettendo solo a 4 filosofi di mangiare
 - utilizzare una soluzione asimmetrica in cui i filosofi dispari hanno priorità sui filosofi pari
 
 La soluzione ottimale è quella di modellare lo stato di ogni filosofo in `THINKING`, `HUNGRY`, `EATING` e imporre che ogni filosofo controlli in che stato siano i vicini prima di prendere le bacchette.
