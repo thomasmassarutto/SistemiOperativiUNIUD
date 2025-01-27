@@ -484,7 +484,95 @@ Il codice del consumatore è speculare a quello del produttore. Prima di entrare
 
 ### Lettori e scrittori
 
+Un insieme di dati è condiviso da un certo numero di processi. Alcuni di questi devono leggere i dati, altri aggiornarli.
+
+- Le richieste dei lettura e scrittura avvengono in modo asincrono e non prevedibile
+- Più processi possono leggere sullo stesso dato, ma sono un processo alla volta può modificarlo. Inoltre, se un file è bloccato in scrittura, non può essere letto.
+
+In questo caso la situazione è asimmetrica e sono presenti 2 varianti di soluzione:
+
+- con **priorità ai lettori**: se non c’è una scrittura in atto nessun lettore deve attendere eventualmente sopravanzando sulle scritture
+- con **priorità agli scrittori**: appena uno scrittore vuole aggiornare i dati lo deve poter fare eventualmente sopravanzando sulle letture
+
+#### Priorità ai lettori
+
 TODO
+
+#### Priorità agli scrittori
+
+Vengono utilizzati 5 semafori e 2 variabili.
+
+```C
+semaphore W=1, R=1, mutex1=1, mutex2=1, mutex3=1;
+int countR=0, countW=0;
+```
+
+- Il semaforo `W`: Permette l'accesso esclusivo alla scrittura. Solo uno scrittore alla volta può accedere ai dati. Viene bloccato quando un lettore o un altro scrittore è in azione.
+- Il semaforo `R`: Serve per garantire che un lettore possa accedere solo se nessuno scrittore ha richiesto accesso. Blocca lettori quando c'è priorità di scrittura.
+- Il semaforo `mutex1`: Protegge la variabile condivisa `countR` (conteggio dei lettori attivi).
+- Il semaforo `mutex2`: Protegge la variabile condivisa `countW` (conteggio degli scrittori attivi).
+- Il semaforo `mutex3`: Garantisce che l'accesso iniziale dei lettori a `R` sia sincronizzato e impedisce race condition all'ingresso.
+
+Il codice del lettore:
+
+```C
+void lettore() {
+    wait(mutex3); // sincronizza lettori
+    wait(R); // attende tutti gli scrittori 
+    wait(mutex1); // protegge countR
+    countR++;
+    if (countR==1) wait(W); // blocca altri scrittori
+    signal(mutex1);
+    signal(R);
+    signal(mutex3); 
+    /*lettura dati*/
+    wait(mutex1);
+    countR--;
+    if (countR==0) signal(W);// sblocca altri scrittori
+    signal(mutex1);
+}
+```
+
+- Ingresso (inizio lettura):        
+    1. wait(mutex3): Sincronizza i lettori per l'accesso controllato a R.        
+    2. wait(R): Attende che non ci siano scrittori con priorità (gestito da countW).        
+    3. wait(mutex1): Protegge l'incremento di countR.        
+    4. Incrementa countR: Se è il primo lettore (countR == 1), blocca gli scrittori con wait(W).        
+    5. Rilascia i lock (signal) in ordine inverso per consentire ad altri lettori di procedere.    
+- Sezione critica (lettura dati): Può essere eseguita da più lettori contemporaneamente, dato che solo il primo lettore ha bloccato gli scrittori.    
+- Uscita (fine lettura):        
+  1. wait(mutex1): Protegge il decremento di countR.        
+  2. Decrementa countR: Se è l'ultimo lettore (countR == 0), sblocca gli scrittori con signal(W).        
+  3. Rilascia mutex1.
+
+Il codice dello scrittore
+
+```C
+void scrittore() {
+    wait(mutex2); // protegge countW
+    countW++;
+    if (countW==1) wait(R); // blocca altri lettori
+    signal(mutex2);
+    wait(W); // un solo scrittore può accedere a W
+    /*scrittura dati*/
+    signal(W); 
+    wait(mutex2);
+    countW--;
+    if (countW==0) signal(R);// sblocca altri lettori
+    signal(mutex2);
+}
+```
+- Ingresso (inizio scrittura):
+  1. wait(mutex2): Protegge l'incremento di countW.
+  2. Incrementa countW: Se è il primo scrittore (countW == 1), blocca i lettori con wait(R).
+  3. Rilascia mutex2.
+  4. wait(W): Blocca l'accesso ad altri scrittori o lettori, garantendo l'esclusività.
+- Sezione critica (scrittura dati): Solo uno scrittore può accedervi grazie al blocco su W.
+- Uscita (fine scrittura):
+  1. Rilascia W per consentire accesso a lettori o scrittori.
+  2. wait(mutex2): Protegge il decremento di countW.
+  3. Decrementa countW: Se è l'ultimo scrittore (countW == 0), sblocca i lettori con signal(R).
+  4. Rilascia mutex2.
 
 ### Cinque filosofi
 
@@ -511,7 +599,7 @@ do {
 
 Questa soluzione non è _deadlock free_ e nemmeno _starvation free_: se tutti i filosofi prendessero contemporaneamente una bacchetta rimarrebbero bloccati. Inoltre, non è garantito che tutti i filosofi possano mangiare entro un tempo finito.
 
-### Rimedi possibili
+#### Rimedi possibili
 
 - controllare che la bacchetta di destra sia libera prima di prendere la bacchetta di sinistra: risolve il problema _deadlock_, ma la _starvation_ rimane possibile.
 - utilizzando lo stesso controllo, ma introducendo un ritardo casuale prima di riprovare a prendere la bacchetta: _deadlock free_, semplice da implementare e spesso usato in situazioni non critiche
@@ -521,7 +609,7 @@ Questa soluzione non è _deadlock free_ e nemmeno _starvation free_: se tutti i 
 
 La soluzione ottimale è quella di modellare lo stato di ogni filosofo in `THINKING`, `HUNGRY`, `EATING` e imporre che ogni filosofo controlli in che stato siano i vicini prima di prendere le bacchette.
 
-### Implementazione
+#### Implementazione
 
 ``` C
 #include <semaphore.h>
