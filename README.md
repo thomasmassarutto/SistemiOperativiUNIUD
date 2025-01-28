@@ -27,14 +27,13 @@ Per ora da warning, non capisco in che documento ci deve essere un errore di sin
 
 ### TODO
 
-- ⚠️ completare esempi in `5_Sincronizzazione.md`
 - capire come far funzionare `config.yaml`
 
 ### Formati output testati
 
 Questi formati generano un file leggibile:
 
-- `pdf`
+- `pdf` sono stati aggiunti in testa ad ogni file dei tag `\newline` per andare a capo
 - `epub` 
   - ⚠️ necessita flag `--mathml` altrimenti i tag \frac{}{} non vengono visualizzati bene
   - ⚠️ necessita del flag --metadata title="..."
