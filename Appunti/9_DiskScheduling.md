@@ -1,3 +1,5 @@
+\newpage
+
 # Disk scheduling
 
 ## Struttura di un disco
@@ -109,5 +111,3 @@ L'algoritmo **FSCAN** funziona similmente, ma con 2 sole code.
 ### Last In First Out (LIFO)
 
 Gli accessi vengono schedulati in base all'ordine inverso di arrivo. Questo approccio è utile nel caso di accessi con _elevata località_, molto vicini tra loro, ma soffre i starvation.
-
-\pagebreak

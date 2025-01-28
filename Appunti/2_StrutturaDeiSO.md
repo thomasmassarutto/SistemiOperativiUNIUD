@@ -1,3 +1,5 @@
+\newpage
+
 # Struttura e servizi dei sistemi operativi
 
 ## Servizi offerti dal sistema operativo
@@ -84,5 +86,3 @@ Applicazioni che emulano le funzionalità di un sistema.
 Le V.M. forniscono in un interfaccia identica alla macchina fisica di cui ne utilizzano (parte delle) risorse. Il S.O. ha il compito di gestire le V.M. in maniera separata, ognuna con il proprio hardware virtuale.
 
 I vantaggi sono l'uso di hardware comune protetto grazie alle proprietà di isolamento delle V.M.
-
-\pagebreak

@@ -134,5 +134,3 @@ Nello specifico il S.O. deve garantire:
 - Privatezza dei dati
 - Integrità dei dati (in caso di modifiche non autorizzate o incontrollate)
 - Autenticazione e gestione dell'identità degli utenti
-
-\pagebreak
