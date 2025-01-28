@@ -1,5 +1,3 @@
-\newpage
-
 # Deadlock
 
 ## Il problema del deadlock
@@ -233,3 +231,5 @@ Adottare questa tecnica significa stabilire una politica per decidere quali riso
 #### Approccio combinato
 
 Per gestire i deadlock i tipi di risorsa vengono partizionati in gruppi (memoria secondaria, risorse per processi, memoria principale, ...) e per evitare attese cicliche fra gruppi viene impiegata la tecnica di _prevenzione_, mentre all'interno di ogni gruppo vengono adottate tecniche ad-hoc anti-deadlock.
+
+\pagebreak

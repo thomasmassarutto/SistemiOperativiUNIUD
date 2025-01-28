@@ -1,5 +1,3 @@
-\newpage
-
 # Memoria virtuale
 
 ## Motivazioni
@@ -285,3 +283,5 @@ Quando è necessario liberare della memoria si selezionano $k$ frame da salvare 
 Quando capita un riferimento ad uno dei frame compressi si attua la decompressione.
 
 L'efficienza della tecnica dipende dagli algoritmi di compressione/decompressione e dal bilanciamento fra rapporto di compressione e velocità di esecuzione.
+
+\pagebreak

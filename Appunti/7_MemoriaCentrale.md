@@ -1,5 +1,3 @@
-\newpage
-
 # Memoria centrale
 
 ## Generalità
@@ -210,3 +208,5 @@ Lo **spazio logico è segmentato** riflettendo la struttura logica del programma
 Di ogni processo si gestisce la **segment table** e per ogni segmento è presente una **page table**.
 
 Questo approccio, grazie alle _pagine_, evita la _frammentazione esterna_, ma nell'ultima pagina di ogni segmento è quasi sempre presente un minimo di _frammentazione interna_.
+
+\pagebreak

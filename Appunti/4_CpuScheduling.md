@@ -1,5 +1,3 @@
-\newpage
-
 # CPU scheduling
 
 ## Scheduling dei processi
@@ -262,3 +260,5 @@ Un task _ready_ viene classificato come **eseguibile** se durante l'ultima esecu
 Il sistema gestisce due array: uno contenente i processi _ready scaduti_ e uno per i processi _ready eseguibili_. La CPU viene assegnata al task _ready eseguibile_ con la priorità massima, se questo utilizza tutto il quanto di tempo assegnatogli viene spostato nell'array dei _ready scaduti_. Quando l'ultimo task _ready eseguibile_ diventa scaduto gli array si scambiano i ruoli.
 
 Questo tipo di scheduling è stato usato fino al kernel 2.6.23 quando è stato sostituito dal _Completely Fair Scheduling_.
+
+\pagebreak

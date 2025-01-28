@@ -1,5 +1,3 @@
-\newpage
-
 # Sincronizzazione
 
 ## Il problema della sezione critica
@@ -702,3 +700,4 @@ void put_sticks(int i) {
     signal(mutex);
 }
 ```
+\pagebreak
