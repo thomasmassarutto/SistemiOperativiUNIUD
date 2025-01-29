@@ -132,7 +132,7 @@ Ci sono quindi due sottoproblemi da risolvere:
 
 In linea di massima la frequenza di page fault è inversamente proporzionale al numero di frame a disposizione.
 
-## Algoritmi di rimpiazzamento delle pagine
+## Algoritmi di rimpiazzo delle pagine
 
 L'obiettivo di questi algoritmi è ottenere il minor numero possibile di _page fault_ e possono essere confrontati paragonando il loro operato alla sequenza di accessi alla memoria, inoltre, anziché lavorare a livello di indirizzi, questi algoritmi lavorano a livello di _pagine_. Ad esempio avendo pagine da 1KB e volendo accedere agli indirizzi:
 
@@ -140,11 +140,11 @@ L'obiettivo di questi algoritmi è ottenere il minor numero possibile di _page f
 
 le pagine accedute sarebbero:
 
-`1` `6` `1` `1` `2` `2` `2` `3`
+`1` `7` `1` `1` `2` `2` `2` `3`
 
 tuttavia gli accessi successivi alla stessa pagina generano al massimo un page fault, quindi la sequenza diventa:
 
-`1 6 1 2 3`
+`1 7 1 2 3`
 
 Nei prossimi esempi di algoritmi per la _selezione della pagina vittima_ si farà riferimento alla sequenza di pagine:
 
@@ -168,7 +168,7 @@ L'algoritmo ottimale per la sequenza di riferimento è:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 7   | 7   | 7   | 2   |     | 2   |     | 2   |     |     | 2   |     |     | 2   |     |     |     | 7   |     |     |
 |     | 0   | 0   | 0   |     | 0   |     | 4   |     |     | 0   |     |     | 0   |     |     |     | 0   |     |     |
-|     |     | 1   | 1   |     | 1   |     | 3   |     |     | 3   |     |     | 1   |     |     |     | 1   |     |     |
+|     |     | 1   | 1   |     | 3   |     | 3   |     |     | 3   |     |     | 1   |     |     |     | 1   |     |     |
 
 In questo caso sono presenti 9 page fault.
 
