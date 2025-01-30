@@ -140,11 +140,11 @@ L'obiettivo di questi algoritmi è ottenere il minor numero possibile di _page f
 
 le pagine accedute sarebbero:
 
-`1` `7` `1` `1` `2` `2` `2` `3`
+`1` `6` `1` `1` `2` `2` `2` `3`
 
 tuttavia gli accessi successivi alla stessa pagina generano al massimo un page fault, quindi la sequenza diventa:
 
-`1 7 1 2 3`
+`1 6 1 2 3`
 
 Nei prossimi esempi di algoritmi per la _selezione della pagina vittima_ si farà riferimento alla sequenza di pagine:
 
@@ -221,7 +221,7 @@ Per trovare la pagina usata meno di recente si può usare:
 
 Ad ogni pagina è associato un _reference bit_ che indica la "vecchiaia" della pagina e le pagine sono considerate in una coda circolare ordinate in base al _tempo di caricamento_.
 
-Quando la pagina è _riferita_ si pone il suo _reference bit_ a 1. Quando si deve selezionare una pagina vittima si parte dalla più vecchia nella coda circolare, se il suo _reference bit_ è 0, la pagina viene selezionata, se è 1 il bit viene scalato a 0 (le viene concessa una seconda chance) e si procede con la ricerca della pagina nella coda circolare analizzando la prossima pagina più vecchia.
+Quando la pagina è _riferita_ si pone il suo _reference bit_ a 1. Quando si deve selezionare una pagina vittima si parte dalla più vecchia nella coda circolare, se il suo _reference bit_ è 0, la pagina viene selezionata, se invece il bit è 1 questo viene impostato a 0 (le viene concessa una seconda chance) e si procede con la ricerca analizzando la pagina successiva.
 
 Intuitivamente è come se una pagina invecchiasse a causa della coda _FIFO_, ma ringiovanisce quando il suo bit viene reimpostato a 0.
 
@@ -240,18 +240,15 @@ Dovendo allocare $M$ frame suddividendoli fra $N$ processi, sono presenti 2 stra
 
 ### Contesto di rimpiazzamento
 
-Quando un processo $P$ genera _page fault_ la _pagina vittima_ può essere scelta:
-
-- in **contesto locale** fra le pagine di $P$
-- in **contesto globale** fra le pagine di tutti i processi
+Quando un processo $P$ genera _page fault_ la _pagina vittima_ può essere scelta nel **contesto locale** fra le pagine del processo $P$, oppure nel **contesto globale** fra le pagine di tutti i processi.
 
 ### Thrashing
 
-Il **thrashing** è un fenomeno che avviene quando un sistema alloca troppi pochi _frame_ ad ogni _processo_. In questa situazione si generano molti _page fault_ che, per essere gestiti, impediscono ai processi di rimanere abbastanza tempo in stato _ready_ rendendo la CPU sottoutilizzata. Per rimediare a questo sottoutilizzo e aumentare la multiprogrammazione, il S.O. caricherà in memoria più processi che avranno bisogno di più pagine che genereranno più _page fault_ peggiorando ulteriormente la situazione.
+Il **thrashing** è un fenomeno che avviene quando un sistema alloca troppi pochi _frame_ a ciascun _processo_. In questa situazione si generano numerosi _page fault_ che il sistema deve gestire togliendo tempo di elaborazione ai processi e rendendo così la CPU sottoutilizzata. Per compensare a questo sottoutilizzo e tentare quindi di aumentare la multiprogrammazione, il S.O. caricherà in memoria più processi, ma questi genereranno più _page fault_ peggiorando ulteriormente la situazione.
 
-Il **working set** è il quantitativo di pagine di memoria che un processo richiede per proseguire l'elaborazione in un momento di tempo.
+Per evitare questo fenomeno è importante avere una stima riguardante il **working set** dei processi, ovvero il quantitativo di pagine di memoria che un processo richiede per proseguire l'elaborazione in un momento di tempo.
 
-I sistemi di memoria virtuale funzionano in modo efficiente quando i _working set_ utilizzati dai processi non superano di molto il limite di archiviazione reale del sistema: in questa situazione solo poche risorse vengono spese per risolvere i _page fault_. Man mano che i _working set_ crescono, la risoluzione degli errori di pagina rimane gestibile finché la crescita non raggiunge un punto critico in cui il numero di errori aumenta drasticamente e il tempo impiegato per risolverli supera il tempo impiegato dal programma per elaborare dati.
+I sistemi con memoria virtuale funzionano in modo efficiente quando i _working set_ utilizzati dai processi non superano di molto il limite di archiviazione reale del sistema: in questa situazione solo poche risorse vengono spese per risolvere i _page fault_. Man mano che i _working set_ crescono, la risoluzione degli errori di pagina rimane gestibile finché la crescita non raggiunge un punto critico in cui il numero di errori aumenta drasticamente e il tempo impiegato per risolverli supera il tempo impiegato dal programma per elaborare dati.
 
 Per risolvere questo problema è necessario ridurre il _grado di multiprogrammazione_ e usare _swapping_ per assicurare ai processi presenti in memoria i frame necessari. Si possono definire i _frame necessari_ in base al modello di località:
 
@@ -266,9 +263,9 @@ Per ogni processo $P_{i}$ si definisce una _finestra di working set_ considerand
 
 Se il S.O. rileva che il numero di _frame_ a disposizione è inferiore alla somma delle dimensioni delle $WSS_{i}$ (_Working Set Sizes_) allora deve diminuire il grado di multiprogrammazione.
 
-Se $\Delta$ è troppo piccolo un processo avrà meno pagine caricate in memoria e genererà più _page fault_, mentre se è troppo grande il processo occupa più spazio del necessario.
+Se $\Delta$ è troppo piccolo un processo avrà meno pagine caricate in memoria e genererà più _page fault_, mentre se è troppo grande il processo occuperà più spazio del necessario.
 
-Dato cha la valutazione delle $WSS$ può comportare inefficienza si approssima il $WS$ con dei reference bit posti a 1 in caso di accesso e azzerati a intervalli regolari. Le pagine che hanno almeno un bit a 1 tra quelli salvati negli ultimi $k$ intervalli compongono un approssimazione del _working set_.
+Dato cha la valutazione delle $WSS$ può comportare inefficienza, si approssima il $WS$ con dei reference bit posti a 1 in caso di accesso e azzerati a intervalli regolari. Le pagine che hanno almeno un bit a 1 tra quelli salvati negli ultimi $k$ intervalli compongono un approssimazione del _working set_.
 
 ### Tecnica del page fault frequency
 
