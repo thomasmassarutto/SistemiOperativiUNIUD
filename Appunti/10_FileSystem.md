@@ -46,52 +46,33 @@ Queste informazioni sono conservate nella struttura di **directory** che risiede
 
 ### Operazioni sui file
 
-**Creazione**:
+Le operazioni fondamentali che possono essere eseguite sui file sono molteplici e ciascuna richiede specifici passaggi da parte del sistema operativo.
 
-- reperire lo spazio per memorizzare il file nel file system
-- creare un nuovo elemento nella directory in cui registrare le informazioni del file (nome, posizione,...)
+La **creazione** di un file richiede che il sistema individui uno spazio disponibile nel file system dove memorizzare il nuovo file e successivamente crei una nuova voce nella directory per registrare tutte le informazioni essenziali del file, come il nome e la sua posizione.
 
 **Scrittura**:
 
-- chiamata al sistema con nome del file e dati da scrivere
-- reperimento del file nel file system
-- scrittura dei dati nella posizione indicata dal _puntatore di scrittura_ e aggiornamento del puntatore
+Per quanto riguarda la **scrittura**, il processo inizia con una chiamata al sistema che include il nome del file e i dati da scrivere. Il sistema. deve poi localizzare il file nel file system e procedere con la scrittura dei dati nella posizione indicata dal _puntatore di scrittura_, aggiornando quest'ultimo dopo l'operazione.
 
-**Lettura**:
-
-- chiamata al sistema con nome del file e indirizzo di memoria dove trascrivere i file letti
-- reperimento del file nel file system
-- lettura dei dati nella posizione indicata dal _puntatore di lettura_ e aggiornamento del puntatore
+La **lettura** segue un processo simile: viene effettuata una chiamata al sistema specificando il nome del file e l'indirizzo di memoria dove dovranno essere trascritti i dati letti, poi, dopo aver localizzato il file, il sistema legge i dati dalla posizione indicata dal _puntatore di lettura_ e aggiorna la sua posizione.
 
 Di solito è mantenuto un solo _puntatore_ alla posizione corrente nel file che serve sia per lettura che scrittura.
 
-**Posizionamento del file**:
+Il **posizionamento** nel file è un'operazione che non comporta input/output: il sistema si limita a trovare il file e aggiornare la posizione corrente nel file.
 
-- reperimento del file nel file system
-- aggiornamento alla posizione corrente
-- nessuna operazione I/O
+La **cancellazione** di un file prevede che dopo aver localizzato il file, il sistema liberi lo spazio che era stato allocato e rimuova la voce corrispondente dalla directory.
 
-**Cancellazione**:
+Il **troncamento** è simile alla cancellazione, ma mantiene alcuni attributi del file: viene eliminato il contenuto e liberato lo spazio allocato, ma alcune informazioni rimangono invariate.
 
-- reperimento del file nel file system
-- si rilascia lo spazio allocato al file e si elimina il corrispondente elemento della directory
+L'**impostazione degli attribut**i richiede semplicemente la localizzazione e l'aggiornamento della voce corrispondente nella directory.
 
-**Troncamento**:
-
-- cancellazione del contenuto del file, ma parte degli attributi restano immutati
-- si rilascia lo spazio allocato al file
-
-**Impostazione degli attributi**:
-
-- reperimento e aggiornamento del relativo elemento di directory
-
-Prima di qualsiasi accesso occorre aprire il file. Il S.O. mantiene in memoria centrale una tabella contenente informazioni su tutti i file aperti (**tabella dei file aperti**) e quando si richiede un operazione sul file si ricercano la informazioni relative tramite un _indice_ nella _tabella dei file aperti_.
+Prima di qualsiasi operazione è necessario aprire il file. Il S.O. mantiene in memoria centrale una tabella contenente informazioni riguardanti tutti i file aperti (**tabella dei file aperti**) e,nel momento in cui viene richiesta un operazione sul file, la ricerca delle relative informazioni avviene tramite un apposito indice nella _tabella dei file aperti_.
 
 Quando il file non è più in uso deve essere chiuso e il S.O. rimuove l'elemento relativo nella _tabella dei file aperti_.
 
 L'apertura avviene tramite un operazione `open(FILE)`. Questa operazione ricerca `FILE` nel file system, ne copia il contenuto nella tabella dei file aperti in memoria principale e restituisce il _puntatore_ all'elemento nella tabella.
 
-La chiusura avviene tramite `close(FILE)`. Questa operazione copia il contenuto di `FILE` presente in memoria principale nella directory nel disco. Rimuove poi il contenuto dalla _tabella dei file aperti_.
+La chiusura avviene tramite `close(FILE)`. Questa operazione copia il contenuto di `FILE` presente in memoria principale nella directory corrispondente nel disco e poi rimuove il contenuto dalla _tabella dei file aperti_.
 
 ### File aperti
 
@@ -117,10 +98,7 @@ le operazioni di I/O richieste)
 
 #### Lock dei file aperti
 
-Il _lock_ dei file garantisce una mediazione per l'accesso condiviso a un file. Può essere obbligatorio o consigliato.
-
-- **obbligatorio**: l'accesso al file è negato se il _lock_ è già stato acquisito da un altro processo
-- **consigliato**: i processi che trovano lo stato di un file impostato su _bloccato_ devono decidere sul da farsi.
+Il _lock_ dei file garantisce un metodo per la mediazione riguardo l'accesso condiviso a un file. Questo lock può essere obbligatorio o consigliato. Se è **obbligatorio** l'accesso al file è negato quando il _lock_ è già stato acquisito da un altro processo, mentre se è **consigliato** i processi che trovano lo stato di un file impostato su _bloccato_ devono decidere sul da farsi.
 
 Se il _lock_ è obbligatorio è il S.O. ad assicurare l'integrità dei dati, altrimenti è compito del programmatore.
 
@@ -130,11 +108,11 @@ Il tipo di un file indica la struttura logica interna del file e permette la cor
 
 Esistono tre tecniche principali per gestire i tipi di file
 
-- **estensioni**: il tipo è indicato da un suffisso del nome (DOS)
+- **Estensioni**: il tipo è indicato da un suffisso del nome (DOS)
 - **Attributo** “tipo” associato al file nella directory (MAC OS)
 - **Magic number**: il tipo è rappresentato da un valore posto all’inizio del file (UNIX)
 
-Il _tipo_ dei file e la sua _struttura logica_ possono essere riconosciuti e gestiti in modi diversi dai S.O. Se il S.O. gestisce molti formati il codice di sistema diventa più ingombrante e potrebbe verificarsi incompatibilità di programmi con file di formato differente, ma di contro la gestione dei formati supportati è più efficiente.
+Il _tipo_ dei file e la sua _struttura logica_ possono essere riconosciuti e gestiti in modi diversi dai S.O. Se il S.O. gestisce molti formati il codice di sistema diventa più ingombrante e potrebbero verificarsi incompatibilità di programmi con file di formato differente, ma, di contro, la gestione dei formati supportati è più efficiente.
 
 Se il S.O. non gestisce molti formati il codice di sistema diventa più snello, ma i formati devono essere gestiti dal programmatore.
 
@@ -142,7 +120,7 @@ In UNIX tutti i file sono stringhe di byte e solo gli eseguibili hanno un format
 
 ### Struttura interna dei file
 
-La dimensione dei _record logici_ di un file spesso non corrisponde alla dimensione dei _record fisici_ sul disco. Questo fenomeno è detto _packing_ e la sua manifestazione più visibile avviene quando parte dell'ultimo _blocco fisico_ contenente il file rimane inutilizzata.
+La dimensione dei _record logici_ di un file spesso non corrisponde alla dimensione dei _record fisici_ sul disco. Questo fenomeno è detto **packing** e la sua manifestazione più visibile avviene quando parte dell'ultimo _blocco fisico_ contenente il file rimane inutilizzata.
 
 ### Modalità di accesso
 
@@ -154,7 +132,9 @@ Accedendo tramite **acceso indicizzato** si fa riferimento ad un _file indice_ i
 
 ## Directory
 
-La _directory_ può essere vista come una tabella che ha un _elemento_ per ogni _nome di file_. Tale _elemento_ contiene gli _attributi_ del _file_ e le informazioni per accedere al contenuto del file su disco. La _directory_ permette quindi di tradurre i _nomi_ dei file negli _elementi_ consentendo così l'accesso a dati e informazioni. Anche le _directory_ risiedono su disco e sono un tipo di file.
+La _directory_ può essere vista come una tabella che ha un _elemento_ per ogni _nome di file_. Tale elemento contiene gli _attributi del file_ e le informazioni per accedere al contenuto del file su disco. La directory permette quindi di tradurre i nomi dei file negli elementi consentendo così l'accesso a dati e informazioni. 
+
+Anche le directory risiedono su disco e sono un tipo di file.
 
 ### Informazioni
 
@@ -178,14 +158,16 @@ Le operazioni che una directory permette sono:
 - Creazione/aggiunta di un file
 - Cancellazione di un file
 - Elenco dei contenuti di una directory
-- Ridenominazione di un file
+- Rinomina di un file
 - Attraversamento del file system
 
-### Directory ad un livello
+### Strutture delle directory
+
+#### Ad un livello
 
 Le **directory ad un livello** prevedono che tutti i file di tutti gli utenti vengano messi in un unica _directory_. Non vi è alcun raggruppamento logico e occorre scegliere un nome diverso per ogni file. Quando il numero di file è grande questi problemi vengono accentuati.
 
-### Directory a due livelli
+#### A due livelli
 
 Per quanto riguarda le **directory a due livelli**, il sistema è diviso in **MFD** (Master File Directory) e **UFD** (User File Directory).
 
@@ -197,13 +179,13 @@ Ogni riferimento a un file da parte dell'utente viene interpretato dal S.O. come
 
 I file di sistema vengono raccolti in opportune _directory_ raggiungibili da tutti gli utenti.
 
-### Directory con struttura ad albero
+#### Struttura ad albero
 
 Il _pathname_ delle **directory ad albero** può essere **assoluto** o **relativo**. La creazione o cancellazione di un nuovo file viene effettuata nella cartella corrente e la creazione di una nuova _directory_ viene interpretata come la creazione di una _sottodirectory_ della cartella corrente.
 
 La cancellazione è ammessa e cancella tutto il contenuto della _directory_.
 
-### Directory a grafico aciclico
+#### Grafico aciclico
 
 Le **directory a grafo aciclico** sono  caratterizzate da _file_ e _sottodirectory_ condivise e  implementate tramite **link** o tramite **duplicazione**. L'**aliasing** è permesso e nomi diversi possono essere utilizzati per riferirsi ad uno stesso oggetto.
 
@@ -213,7 +195,7 @@ I _link_ fanno insorgere il problema della cancellazione: cancellando un file o 
 
 Mantenere il grafo _aciclico_ garantisce semplicità negli algoritmi di attraversamento. Per fare ciò sono ammessi link solo ai file e non alle directory. Nel caso si permetta di generare link alle directory bisogna verificare l'assenza di cicli.
 
-### Directory a grafo generico
+#### Grafo generico
 
 Le **directory a grafo generico** Possono introdurre cicli che devono essere gestiti tramite **garbage collection**.Per implementare la cancellazione di parti non più riferite prima si attraversa il file system marcando i file accessibili e, con un secondo passaggio, si rimuovono i file non marcati.
 
