@@ -14,7 +14,7 @@ In poche parole il _file system_ garantisce una gestione dei file indipendente d
 
 ## File
 
-Ogni **file** è un insieme di informazioni correlate e registrate nella memoria secondaria. Dal punto di vista dell'utente è la più piccola porzione di memoria secondaria indirizzabile logicamente. Inoltre, i dati possono essere scritti nella memoria secondaria attraverso i files.
+Ogni **file** è un insieme di informazioni correlate e registrate nella memoria secondaria. Dal punto di vista dell'utente è la più piccola porzione di memoria secondaria indirizzabile logicamente. I dati possono essere scritti nella memoria secondaria attraverso i files.
 
 Dal punto di vista del S.O., i files sono mappati su dispositivi fisici di memorizzazione non volatili.
 
@@ -22,17 +22,15 @@ Un file può contenere dati o programmi.
 
 ### Struttura di un file
 
-Un file può essere strutturato in vari modi:
+Un file può essere strutturato come una _sequenza di byte_, una _sequenza di record_ (linee, record a lunghezza fissa o variabile) o come una _struttura complessa_ (documento formattato, file eseguibile).
 
-- sequenza di byte
-- sequenza di record (linee, record a lunghezza fissa o variabile)
-- struttura complessa (documento formattato, file eseguibile)
+La struttura è decisa dal S.O., dall'applicativo che crea il file o in generale da chi crea il file.
 
-La struttura di un file è decisa dal S.O., dall'applicativo che crea il file o in generale da chi crea il file.
-
-Tipicamente la struttura di un file è definita dal suo tipo, ma tutti i S.O. prevedono almeno un file di tipo **eseguibile**. Solo alcuni S.O. prevedono la gestione diretta di diverse strutture di file tramite operazioni specifiche.
+Tipicamente la struttura di un file è definita dal suo tipo, ma tutti i S.O. prevedono almeno un file di tipo **eseguibile**, mentre solo alcuni S.O. prevedono la gestione diretta di diverse strutture di file tramite operazioni specifiche.
 
 ### Attributi dei file
+
+Ogni file è correlato da vari attributi che sono conservati nella **directory** che risiede in memoria secondaria
 
 - **Nome**: id del file per l'utente
 - **Identificativo**: numero che identifica il file all'interno del file system
@@ -42,17 +40,13 @@ Tipicamente la struttura di un file è definita dal suo tipo, ma tutti i S.O. pr
 - **Protezione**: parametri per il controllo di accesso per la lettura, scrittura e esecuzione del file
 - **Ora, data**: dati necessari alla sicurezza del sistema e per il controllo d'uso
 
-Queste informazioni sono conservate nella struttura di **directory** che risiede in memoria secondaria.
-
 ### Operazioni sui file
 
 Le operazioni fondamentali che possono essere eseguite sui file sono molteplici e ciascuna richiede specifici passaggi da parte del sistema operativo.
 
 La **creazione** di un file richiede che il sistema individui uno spazio disponibile nel file system dove memorizzare il nuovo file e successivamente crei una nuova voce nella directory per registrare tutte le informazioni essenziali del file, come il nome e la sua posizione.
 
-**Scrittura**:
-
-Per quanto riguarda la **scrittura**, il processo inizia con una chiamata al sistema che include il nome del file e i dati da scrivere. Il sistema. deve poi localizzare il file nel file system e procedere con la scrittura dei dati nella posizione indicata dal _puntatore di scrittura_, aggiornando quest'ultimo dopo l'operazione.
+Per quanto riguarda la **scrittura**, il processo inizia con una chiamata al sistema che include il nome del file e i dati da scrivere. Il sistema deve poi localizzare il file nel file system e procedere con la scrittura dei dati nella posizione indicata dal _puntatore di scrittura_, aggiornando quest'ultimo dopo l'operazione.
 
 La **lettura** segue un processo simile: viene effettuata una chiamata al sistema specificando il nome del file e l'indirizzo di memoria dove dovranno essere trascritti i dati letti, poi, dopo aver localizzato il file, il sistema legge i dati dalla posizione indicata dal _puntatore di lettura_ e aggiorna la sua posizione.
 
@@ -64,9 +58,9 @@ La **cancellazione** di un file prevede che dopo aver localizzato il file, il si
 
 Il **troncamento** è simile alla cancellazione, ma mantiene alcuni attributi del file: viene eliminato il contenuto e liberato lo spazio allocato, ma alcune informazioni rimangono invariate.
 
-L'**impostazione degli attribut**i richiede semplicemente la localizzazione e l'aggiornamento della voce corrispondente nella directory.
+L'**impostazione degli attributi** richiede semplicemente la localizzazione e l'aggiornamento della voce corrispondente nella directory.
 
-Prima di qualsiasi operazione è necessario aprire il file. Il S.O. mantiene in memoria centrale una tabella contenente informazioni riguardanti tutti i file aperti (**tabella dei file aperti**) e,nel momento in cui viene richiesta un operazione sul file, la ricerca delle relative informazioni avviene tramite un apposito indice nella _tabella dei file aperti_.
+Prima di qualsiasi operazione è necessario aprire il file. Il S.O. mantiene in memoria centrale una tabella contenente informazioni riguardanti tutti i file aperti (**tabella dei file aperti**) e, nel momento in cui viene richiesta un operazione sul file, la ricerca delle relative informazioni avviene tramite un apposito indice nella _tabella dei file aperti_.
 
 Quando il file non è più in uso deve essere chiuso e il S.O. rimuove l'elemento relativo nella _tabella dei file aperti_.
 
@@ -98,7 +92,7 @@ le operazioni di I/O richieste)
 
 #### Lock dei file aperti
 
-Il _lock_ dei file garantisce un metodo per la mediazione riguardo l'accesso condiviso a un file. Questo lock può essere obbligatorio o consigliato. Se è **obbligatorio** l'accesso al file è negato quando il _lock_ è già stato acquisito da un altro processo, mentre se è **consigliato** i processi che trovano lo stato di un file impostato su _bloccato_ devono decidere sul da farsi.
+Il _lock_ dei file garantisce un metodo per la mediazione riguardo l'accesso condiviso a un file, può essere obbligatorio o consigliato. Se è **obbligatorio** l'accesso al file è negato quando il lock è già stato acquisito da un altro processo, mentre se è **consigliato** i processi che trovano lo stato di un file impostato su _bloccato_ devono decidere sul da farsi.
 
 Se il _lock_ è obbligatorio è il S.O. ad assicurare l'integrità dei dati, altrimenti è compito del programmatore.
 
@@ -114,7 +108,7 @@ Esistono tre tecniche principali per gestire i tipi di file
 
 Il _tipo_ dei file e la sua _struttura logica_ possono essere riconosciuti e gestiti in modi diversi dai S.O. Se il S.O. gestisce molti formati il codice di sistema diventa più ingombrante e potrebbero verificarsi incompatibilità di programmi con file di formato differente, ma, di contro, la gestione dei formati supportati è più efficiente.
 
-Se il S.O. non gestisce molti formati il codice di sistema diventa più snello, ma i formati devono essere gestiti dal programmatore.
+Un S.O. che gestisce pochi formati presenta un codice di sistema più snello, ma il programmatore deve gestire i formati.
 
 In UNIX tutti i file sono stringhe di byte e solo gli eseguibili hanno un formato specifico.
 
@@ -224,7 +218,7 @@ In Linux `/etc/fstab` contiene il file per i dispositivi da montare automaticame
 
 Nei _sistemi distribuiti_ si usa **NFS** (Network File System).
 
-Nei _sistemi multiutente_ il modello più diffuso utilizza i concetti di **owner** e **group**. L'_owner_ possiede tutti i diritti di un file (o directory), mentre un _gruppo_ definisce un insieme di utenti autorizzati a condividere l'accesso (o altri permessi) al file.
+Nei _sistemi multiutente_ il modello più diffuso utilizza i concetti di **owner** e **group**. L'_owner_ possiede tutti i diritti di un file (o directory), mentre un _group_ definisce un insieme di utenti autorizzati a condividere l'accesso (o altri permessi) al file.
 
 L'identificatore di un gruppo è il **GID**, mentre l'identificatore di un utente è il **UID** e sono memorizzati come attributi nel file (o directory).
 
