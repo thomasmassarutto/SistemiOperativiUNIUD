@@ -21,7 +21,7 @@ Nella repo è presente un file `.yaml` per personalizzare le esportazioni.
 
 Creazione di un file unico:
 
-`pandoc -s 1_Introduzione.md 2_StrutturaDeiSO.md 3.1_Processi.md 3.2_Threads.md 4_CpuScheduling.md 5_Sincronizzazione.md 6_Deadlock.md 7_MemoriaCentrale.md 8_MemoriaVirtuale.md 9_DiskScheduling.md 10_FileSystem.md 10.1_RealizzazioneDelFileSystem.md -o SistemiOperativi.pdf --metadata-file=config.yaml --mathml`
+`pandoc -s 1_Introduzione.md 2_StrutturaDeiSO.md 3.1_Processi.md 3.2_Threads.md 4_CpuScheduling.md 5_Sincronizzazione.md 6_Deadlock.md 7_MemoriaCentrale.md 8_MemoriaVirtuale.md 9_DiskScheduling.md 10_FileSystem.md 10.1_RealizzazioneDelFileSystem.md ProgrammazioneDiSistema.md -o SistemiOperativi.pdf --metadata-file=config.yaml --mathml`
 
 Per ora da warning, non capisco in che documento ci deve essere un errore di sintassi $\LaTeX$.
 
