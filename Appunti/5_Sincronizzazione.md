@@ -424,11 +424,7 @@ signal (semaforo *S){
 }
 ```
 
-## Tipici problemi di sincronizzazione
-
-Esempi di vari problemi tipici.
-
-### Produttori e consumatori
+### Produttori e consumatori (semafori)
 
 - Uno o più processi **produttori** generano dati e li inseriscono in un buffer.
 - Uno o più processi **consumatori** utilizzano dati prelevandoli da un buffer.
@@ -482,7 +478,7 @@ do {
 
 Il codice del consumatore è speculare a quello del produttore. Prima di entrare in sezione critica controlla che ci siano dati e dopo esserne uscito segnala ai produttori, tramite il secondo semaforo, che nel buffer si è liberato dello spazio.
 
-### Lettori e scrittori
+### Lettori e scrittori (semafori)
 
 Un insieme di dati è condiviso da un certo numero di processi. Alcuni di questi devono leggere i dati, altri aggiornarli.
 
@@ -613,7 +609,7 @@ void scrittore() {
   3. Decrementa countW: Se è l'ultimo scrittore (countW == 0), sblocca i lettori con signal(R).
   4. Rilascia mutex2.
 
-### Cinque filosofi
+### Cinque filosofi (semafori)
 
 Ci sono $N=5$ filosofi che passano la vita mangiando e pensando. Sono tutti seduti ad una tavola su cui sono presenti $N$ bacchette e una ciotola di riso. 
 
@@ -702,3 +698,179 @@ void put_sticks(int i) {
     signal(mutex);
 }
 ```
+## Monitor
+
+Un monitor è un costrutto ad _alto livello_ che permette la sincronizzazione e la condivisione sicura dei dati fra processi. Viene implementato tramite un tipo di _dato astratto_ che fornisce funzionalità di mutua esclusione tramite la definizione di una collezione di dati ai quali è possibile accedere solo tramite le **procedure** definite nel monitor stesso (i processi possono solo invocare le procedure, non accedere direttamente ai dati). Queste procedure sono costruite in modo da permettere ad un solo processo alla volta di eseguire codice all'interno del monitor.
+
+Il monitor è implementato tramite costrutti di _basso livello_ quali _semafori_ e _memoria condivisa_. Il programmatore deve raccogliere tutte le sezioni critiche e i dati condivisi che vuole proteggere e inserirli in un monitor.
+
+Per garantire la **mutua esclusione**, i processi che invocano un monitor sono inseriti in una **coda di ingresso** in modo da permettere ad un solo processo di essere attivo all'interno del monitor.
+
+Per garantire la **sincronizzazione** vengono usate delle _condition variables_ locali al monitor.
+
+```c
+condition x,y;
+```
+
+Permettono ad un processo di attendere il verificarsi di un evento.
+
+Su queste condizioni si possono eseguire le operazioni di `wait()` e di `signal()`. 
+Tramite la `wait()` il processo chiamante viene inserito nella coda relativa alla variabile in attesa di essere attivato, mentre `signal()` attiva uno dei processi presenti nella coda relativa alla variabile.
+
+### Risveglio di un processo
+
+Se un processo $P_{2}$ è in attesa su `x` e $P_{1}$ esegue `x.signal()` non possono entrambi diventare attivi nel monitor e bisogna implementare una politica di getione.
+
+- _signal & exit_: $P_{1}$, eseguendo la exit esce dal monitor, e lascia campo libero a $P_{2}$
+- _signal & wait_: $P_{1}$ cede il controllo a $P_{2}$ e va in attesa che $P_{2}$ escadal monitor o vada in attesa su una condition
+- _signal & run_: $P_{1}$ continua ad essere attivo sul monitor finchè non lo rilascia o non va in attesa su una condition. Nel mentre $P_{2}$ non è più in coda su `x`, ma viene messo in coda d'entrata al monitor.
+
+Le chiamate nidificate a monitor devono essere impedite perchè possono causare deadlock.
+
+### Produttori e consumatori (monitor)
+
+```c
+monitor ProduttoriConsumatori{
+    condition full; // indica che il buffer è pieno 
+    condition empty; // inidca che il buffer è vuoto
+    int count; // indica il numero di item dentro il buffer
+
+    void inserisci(item x){ 
+        if (count == N){ // il buffer è pieno
+            full.wait(); // finchè è pieno non può inserire
+        }
+
+        insert(x, *buffer);
+        count++;
+
+        if (count == 1){  // nel caso fosse l'unico
+            empty.signal()// segnala che possono ricominciare a prendere
+        }
+
+    } 
+
+    item preleva(){
+        item= x;
+
+        if (count == 0){ // il buffer è vuoot
+            empty.wait() // aspetta
+        }
+
+        x= get_item(*buffer);
+        count --;
+
+        if (count == N-1){ // nel caso avesse liberato l'unica posizione libera
+            full.signal() // lo segnala
+        }
+
+        return x;
+    }
+}
+```
+
+```c
+void produttere(){
+
+    item x;
+    while (true){
+        x= genera_item();
+        ProduttoriConsumatori.inserisci(x);
+    }
+}
+```
+
+
+```c
+void consumatore(){
+    item x;
+    while (true){
+        x= ProduttoriConsumatori.preleva(x);
+        consuma(x);
+    }
+}
+```
+
+### Lettori e scrittori (monitor)
+
+L'accesso in lettura è condiviso fra lettori. Un solo scrittore alla volta è ammesso. I lettori hanno la precedenza.
+
+
+```c
+monitor LettoriScrittori{
+    condition read;
+    condtition write;
+    countR; // conteggio di lettori
+    bool writing= false; // segna che qualcuno sta scrivendo
+
+    void beginRead(){
+        countR ++;
+
+        while(writing){ // se qualcuno sta scrivendo
+            read.wait() // aspetta
+        }
+    }
+
+    void endRead(){
+        countR --; // un lettore in meno
+        if (countR == 0) { // se non ci sono più lettori
+            read.signal() // lo segala su read
+        }
+
+    }
+
+    void beginWrite(){
+        while (writing || countR > 0){ // se la risorsa è occupata
+            write.wait(); //aspetta
+        }
+        writing= true;
+    }
+
+    void endWrite(){
+        writing= false; // smette di scrivere 
+        if (CountR>0){ // se ci sono letori in attesa
+            for (int i=0;i<countR;i++){ // do a loro la precedenza
+                read.signal()
+            }
+        } else{ // altrimenti libero per altri scrittori
+            write.signal()
+        }
+
+    }
+
+}
+```
+
+```c
+void lettore (){
+    while (true){
+        LettoriScrittori.beginRead()
+        // legge ...
+        LettoriScrittori.endRead()
+
+    }
+}
+```
+
+```c
+void scrittore (){
+    while (true){
+        LettoriScrittori.beginWrite()
+        // scrive ...
+        LettoriScrittori.endWrite()
+
+    }
+}
+```
+
+## Comunicazione e sincronizzazione in UNIX/LINUX
+
+Avviene tramite i seguenti metodi:
+
+- le pipe (`pipe`, `read`, `write`)
+- i segnali (`kill`, `sigaction`, .. )
+- i semafori e i vettori di semafori (`semget`, `semop`, `semctl`)
+- la shared memory e memory mapping (`shmget`, `shmat`, `shmdt`, `shmctl`, `mmap`)
+- le code di messaggi (mailbox) (`msgget`, `msgctl`, `msgrcv`, `msgsnd`)
+- gestione IPC (`ipcs`, `ipcrm`)
+- le socket (`socket`, `accept`, `bind`, `connect`, `read`, `write`,... )
+- mutex e condition variables nei pthread
