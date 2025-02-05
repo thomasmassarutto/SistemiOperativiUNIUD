@@ -1,0 +1,10 @@
+---
+title: "Sistemi operativi"
+author: "Thomas"
+toc: true
+numbersections: true
+geometry: a4paper,landscape,top=2cm,bottom=2cm,left=0.5cm,right=0.5cm,heightrounded
+version: "PcVersion"
+fontsize: 14pt
+documentclass: extreport
+---
