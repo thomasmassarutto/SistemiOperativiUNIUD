@@ -25,7 +25,7 @@ Perché ci sia un _deadlock_, sono **necessarie** 4 condizioni non indipendenti:
 3. **Assenza di preemption**: non è possibile sottrarre una risorsa ad un processo che l'ha acquisita.
 4. **Attesa circolare**: esiste un insieme di processi in cui ognuno attenda la risorsa di un altro.
 
-## Grado di allocazione delle risorse
+## Grafo di allocazione delle risorse
 
 Per rappresentare la situazione è utile utilizzare il **grafo di allocazione delle risorse** $G(V,E)$:
 
