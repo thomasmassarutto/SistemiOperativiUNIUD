@@ -7,4 +7,6 @@ geometry: a4paper,landscape,top=2cm,bottom=2cm,left=0.5cm,right=0.5cm,heightroun
 version: "PcVersion"
 fontsize: 14pt
 documentclass: extreport
+header-includes:
+- \usepackage{charter}
 ---
