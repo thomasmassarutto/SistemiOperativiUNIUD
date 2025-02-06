@@ -114,7 +114,7 @@ Similare alla `wait()`, ma attende la terminazione di uno specifico figlio.
 
 ## Cambio di programma 
 
-Il cambio di programma da eseguire è implementato da varie system call. La variante base è la `execve()`
+Il cambio di programma da eseguire è implementato da varie system call. La variante base è la `execve()`.
 
 ### `execve()`
 
@@ -138,7 +138,7 @@ Il cambio di programma da eseguire è implementato da varie system call. La vari
 
 ### `open()`
 
-Permette l'apertura o la creazione di un file restituendo un file descriptor. il file descriptor può essere utilizzato dalle successive come riferimento al file aperto.
+Permette l'apertura o la creazione di un file restituendo un file descriptor. il file descriptor può essere utilizzato successivamente come riferimento al file aperto.
 
 `int open(const char *pathname, int flags, mode_t perm)`
 
@@ -155,7 +155,7 @@ Permette l'apertura o la creazione di un file restituendo un file descriptor. il
 
 ### `read()`
 
-Legge dal file selezionata attraverso il file descriptor al massimo $n$ byte e li copia in un buffer. Restituisce il numero di byte letto.
+Legge dal file selezionato attraverso il file descriptor al massimo $n$ byte e li copia in un buffer. Restituisce il numero di byte letto.
 
 `ssize read(int fd, void *buffer, size_t n)`
 
@@ -175,7 +175,7 @@ Opera similmente alla `read()`.
 
 ### `lseek()`
 
-Sposta le posizioni dei puntatori di lettura e scrittura di un file aperto a partire dalla posizione `whence`
+Sposta le posizioni dei puntatori di lettura e scrittura di un file aperto a partire dalla posizione `whence`.
 
 `off_t lseek(int fd, off_t offset, int whence)`
 
@@ -188,7 +188,7 @@ Sposta le posizioni dei puntatori di lettura e scrittura di un file aperto a par
 
 ### `close()`
 
-Elimina il file descriptor di un file. Se era l'ultimo descrittore di un file allora chiude anche il file.
+Elimina il file descriptor di un file. Se questo era il suo l'ultimo descrittore attivo, il file viene chiuso.
 
 `int close(int fd)`
 
@@ -242,7 +242,7 @@ Il campo `st_mode` indica il tipo del file ed è possibile analizzarne il conten
 
 ### `fcntl()`
 
-Consente di accedere e di modificare i file di un flag attraverso il file descriptor
+Consente di accedere e di modificare i flag di un file utilizzando il file descriptor.
 
 `int fcntl(int fd, int cmd ...arg...)`
 
@@ -254,7 +254,8 @@ Consente di accedere e di modificare i file di un flag attraverso il file descri
 
 ## Operare su directory
 
-Queste system calls necessitano di `#include <dirent.h>` e di `#include <sys/types.h>`
+Queste system calls necessitano di `#include <dirent.h>` e di `#include <sys/types.h>`.
+
 Una entry di una directory è rappresentata dalla struttura `dirent`:
 
 ```c
@@ -277,7 +278,7 @@ Apre la directory e restituisce un puntatore predisposto a scorrere la lista del
 
 ### `dirent()`
 
-Restituisce un entry della directory e sposta il puntatore in avanti.
+Restituisce una entry della directory e sposta il puntatore in avanti.
 
 `struct dirent *readdir(DIR *dirpath)`
 
@@ -285,13 +286,13 @@ Restituisce un entry della directory e sposta il puntatore in avanti.
 
 ### `rewinddir()`
 
-Riposiziona il puntatore all'inizio della directory 
+Riposiziona il puntatore all'inizio della directory.
 
 `void rewinddir(DIR *dirp)`
 
 ### `closedir()`
 
-Chiude la directory
+Chiude la directory.
 
 `void closedir(DIR *dirp)`
 
@@ -299,7 +300,7 @@ Chiude la directory
 
 Per utilizzare le _pipes_ è necessario utilizzare `#include <unistd.h>`
 
-Una pipe è un array di due interi che contiene i due descrittori dei file identificanti la pipe
+Una pipe è rappresentata da un array di due interi che contengono i descrittori di file per la lettura e la scrittura.
 
 `int pipe(pipefd[2])`
 
@@ -314,7 +315,7 @@ Una volta creata la pipe, gli estremi sono utilizzabili come se fossero i file d
 
 # IPC: Inter Process Communication
 
-Vi sono tre principali metodi di comunicazione fra processi: semafori, memoria condivisa e code di messaggi. Le system call per le operazioni che si possono svolgere tramite questi metodi sono simili.
+Vi sono tre principali metodi di comunicazione fra processi: **semafori**, **memoria condivisa** e **code di messaggi**. Le system call per le operazioni che si possono svolgere tramite questi metodi sono simili.
 
 |           | semafori      | memoria condivisa   | code di messaggi      |
 | --------- | ------------- | ------------------- | --------------------- |
@@ -329,7 +330,7 @@ Ogni risorsa è identificata dal proprio _identifier_ che è generato runtime tr
 
 ### `ftok()`
 
-Genera una key a partire da un pathname
+Genera una key a partire da un pathname.
 
 `key_t ftok(const char *pathname, int proj_id)`
 
@@ -375,6 +376,7 @@ Esegue l'inizializzazione di un semaforo.
         unisgned short *array;
     }
     ```
+
 Alcuni valori per `cmd`:
 - `IPC_STAT`: memorizza le informazione sullo stato in `args.buf`
 - `IPC_SET`: imposta informazioni (owner, permessi, ...) copiandoli da `args.buf`
@@ -404,7 +406,7 @@ Memoria condivisa fra processi.
 
 ### `shmget()`
 
-Crea un blocco di memoria
+Crea un blocco di memoria.
 
 `int shmeget(key_t, size_t size, int shmflg)`
 
@@ -447,7 +449,7 @@ Un messaggio è una qualsiasi sequenza di caratteri i di byte.
 
 ### `msgget()`
 
-Crea o apre una coda. Il valore ritornato fa le veci dell'identifier della coda.
+Crea o apre una coda. Il valore ritornato fa le veci dell'identifier relativo alla coda.
 
 `int msgget(key_t key, int msgflg)`
 
@@ -495,29 +497,27 @@ Riceve un messaggio tramite la coda ed elimina il messaggio dalla coda
 
 # Segnali
 
-Meccanismi per inviare interrupt software ai processi, sono un tipo di comunicazione asincrona.
+I **segnali** sono meccanismi per inviare interrupt software ai processi, sono un tipo di _comunicazione asincrona_.
 
-I segnali possono essere **inviati** da un processo a uno o a più processi. Quando vengono **ricevuti** possono essere _gestiti_ (tramite azione di default o azioni specifiche), _ignorati_ (non sempre è possibile) oppure _blocati_ (il segnale resta pendente). La gestione del segnale avviene per mezzo di un _handler di segnale_.
+Possono essere **inviati** da un processo a uno o a più processi. Quando vengono **ricevuti** possono essere _gestiti_ (tramite azione di default o azioni specifiche), _ignorati_ (non sempre è possibile) oppure _bloccati_ (il segnale resta pendente). La gestione del segnale avviene per mezzo di un _handler di segnale_.
 
-I segnali sono definiti nel header `signal.h`.
+I segnali sono definiti nell'header `signal.h`.
 
-Spesso l'azione di default consiste nella teminazione del processo ricevente. questo avviene con i segnali `SIGABRT`, `SIGBUS`, `SIGSEGV`, `SIGQUIT`, `SIGILL`, `SIGTRAP` e altri che generano un file core image. I segnali di `SIGINT`, `SIGKILL`, `SIGUSR1` provocano la terminazione senza generare cora.
+Spesso l'azione di default consiste nella teminazione del processo ricevente. Questo avviene con i segnali `SIGABRT`, `SIGBUS`, `SIGSEGV`, `SIGQUIT`, `SIGILL`, `SIGTRAP` e altri che generano un file _core image_. I segnali di `SIGINT`, `SIGKILL`, `SIGUSR1` provocano la terminazione senza generare il file core.
 
-Il segnale `SIGSTOP` blocca il processo ricevente che passa in stato di _suspended_.
-
-`SIGCONT` riavvia il processo che si trovava nello stato di _suspended_.
+Il segnale `SIGSTOP` blocca il processo ricevente che passa in stato di _suspended_. Per riavviarlo si usa `SIGCONT` che porta il processo dallo stato di _suspended_ allo stato di _running_.
 
 ## Approfondimento su `wait()`
 
-Quando un processo termina e diventa _terminated_, il suo valore viene scritto nella process table e il segnale `SIGCHLD` viene inviato al padre. Quando quest'ultimo esegue la `wait()` il suo comportamento dipende dalla presenza e dallo stato dei figli. Se non ci sono figli `wait()` restituisce un codice d'errore. Se almeno un figlio è _terminated_ uno di essi viene eliminato dalla process table restituendo PID e return value. Se esistono figli, ma nessuno è _terminated_ il processo chiamante viene messo in attesa.
+Quando un processo termina e diventa _terminated_, il suo valore di ritorno viene scritto nella _process table_ e un segnale `SIGCHLD` viene inviato al padre. Quando quest'ultimo esegue la `wait()` il suo comportamento dipende dalla presenza e dallo stato dei figli. Se non ci sono figli `wait()` restituisce un codice d'errore. Se almeno un figlio è _terminated_ uno di essi viene eliminato dalla process table restituendo PID e return value. Se esistono figli, ma nessuno è _terminated_ il processo chiamante viene messo in attesa.
 
-Di default l'azione di fronte ad un `SIGCHLD` è ignore: i figli restano _terminated_ fino alla wait o alla terminazione del padre. Se il processo decide attivamente di ignorare `SIGCHLD`, il kernel elimina il processo _terminated_ appena riceve il segnale.
+Di default l'azione di fronte ad un `SIGCHLD` è ignore: i figli restano _terminated_ fino alla `wait()` o alla terminazione del padre. Se il processo decide attivamente di ignorare `SIGCHLD`, il kernel elimina il processo _terminated_ appena riceve il segnale.
 
-Il valore di ritorno della `wait()` viene interpretato in base ai byte che lo compongono.
+Il valore di ritorno della `wait()` viene interpretato in base ai byte che lo compongono:
 
-Se il _rightmost_ byte è 0, il _leftmost_ byte (8 bit) contiene il valore di ritorno del figlio.
+- Se il _rightmost_ byte è 0, il _leftmost_ byte (8 bit) contiene il valore di ritorno del figlio.
 
-Se il _rightmost_ byte è 1, i 7 bit meno significativi contengono il codice del segnale di terminazione, mentre il bit rimanente indica la generazione di _core dump_.
+- Se il _rightmost_ byte è 1, i 7 bit meno significativi contengono il codice del segnale di terminazione, mentre il bit rimanenti indicano la generazione di _core dump_.
 
 ## Approfondimento su `waitpid()`
 
@@ -547,7 +547,8 @@ Invia un segnale da programma.
 ## Ignorare `SIGCHLD`
 
 Per gestire un segnale un processo può optare per tre opzioni: la scelta di default, getire attivamente o ignorare il segnale.
-La scelta di default permette al figlio rimane in stato _terminated_ fino all'esecuzione della wait. Tramite `SIG_IGN` il processo terminated viene rimosso. La flag `SA_NOCLDWAIT` ha un effetto simile, ma viene impostata tramite `sigaction()`.
+
+La scelta di default permette al figlio di rimanere in stato _terminated_ fino all'esecuzione della `wait()`. Se il segnale viene attivamente ignorato tramite `SIG_IGN` il processo terminated viene subitO rimosso. La flag `SA_NOCLDWAIT` ha un effetto simile, ma viene impostata tramite `sigaction()` ed evita che i processi figli diventino zombie, senza la necessità di gestire esplicitamente `SIGCHLD`.
 
 ## Gestion dei segnali
 
@@ -596,7 +597,7 @@ Esistono due principali modi per comunicare tramite socket: _connection oriented
 
 Per comunicare con questi due paradigmi è possibile usare:
 
-- **Stream socket**: forniscono stream di dati affidabili, ordinati. Sono supportati da TCP
+- **Stream socket**: forniscono stream di dati affidabili, ordinati. Sono supportati da TCP.
 - **Stream datagram**: trasferiscono messaggi di dimensione variabile, il contenuto è controllato da checksum, ma non viene garantito ne l'ordine ne l'arrivo dei pacchetti. Sono supportati da UDP.
 
 ## Indirizzi IP
@@ -620,7 +621,7 @@ Le porte da 0 1023 sono riservate a servizi standard, mentre dalla 1024 alla 655
 
 ## Strutture dati
 
-Un socket generico è definito come
+Un socket generico è definito come:
 
 ```c
 struct sockaddr {
@@ -629,7 +630,7 @@ struct sockaddr {
 }
 ```
 
-Un socket `UNIX` è definito come
+Un socket `UNIX` è definito come:
 
 ```c
 #DEFINE UNIX_PATH_MAX 108
@@ -639,7 +640,7 @@ struct sockaddr_un {
 }
 ```
 
-Un socket nel dominio `INET` è definito come
+Un socket nel dominio `INET` è definito come:
 
 ```c
 struct sockaddr_in {
@@ -649,7 +650,7 @@ struct sockaddr_in {
 };
 ```
 
-in cui 
+in cui
 
 ```c
 struct in_addr {
@@ -659,10 +660,11 @@ struct in_addr {
 
 ## System call
 
-Per comunicare attraverso un socket, due processi devono compiere una serie di passi. Sia server che client devono dapprima definire i rispettivi **transport end point** (`socket()`). Il server deve legare l’end point all’indirizzo dell’host (`bind()`), impostarlo in uno stato di ascolto “passivo” ed alloca le strutture per gestire una coda di client (`listen()`), poi il server si predispone per accettare la connessione (`accept()`). A questo punto il client richiede la connessione (`connect()`) equesta procede bidirezionalmente tramite `send()` e `recv()` (ma
-anche `write()` e `read()`). La chiusura del socket avviene tramite `close()` o `unlink()`.
+Per comunicare attraverso un socket, due processi devono compiere una serie di passi. Sia server che client devono dapprima definire i rispettivi **transport end point** (`socket()`). Il server deve legare l’end point all’indirizzo dell’host (`bind()`), impostarlo in uno stato di _ascolto passivo_ ed alloca le strutture per gestire una coda di client (`listen()`), poi il server si predispone per accettare la connessione (`accept()`). A questo punto il client richiede la connessione (`connect()`) e questa procede bidirezionalmente tramite `send()` e `recv()` (maanche `write()` e `read()`). La chiusura della socket avviene tramite `close()` o `unlink()`.
 
 ### `socket()`
+
+Definisce una socket.
 
 `socket(int domain, int type, int protocol)`
 
@@ -670,7 +672,7 @@ anche `write()` e `read()`). La chiusura del socket avviene tramite `close()` o 
 - `int type`: indica se verra usato il paradigma connection oriented `SOCK_STREAM`  o quello connectionless `SOCK_DGRAM`
 - `int protocol`: specifica il protocollo
 
-Il valore di ritorno è un descrittore del socket.
+Il valore di ritorno è un descrittore della socket.
 
 ### `bind()`
 
@@ -684,7 +686,7 @@ Associa l'endpoint all'indirizzo
 
 ### `listen()`
 
-Il server imposta il socket in modo che possa ascoltare le connessioni in entrata.
+Il server imposta la socket in modo che possa ascoltare le connessioni in entrata.
 
 `int listen(int sockfd, int queue_size)`
 
@@ -783,7 +785,7 @@ Un thread può chiedere la terminazine di un altro thread specificandone il TID.
 
 `int pthread_cancel(pthread_t thread)`
 
-Usando i cambi di stato un pthread può, per esempio, ritardare l’effetto di pthread_cancel() per evitare di essere cancellato nel mezzo di un blocco di codice critico, che non deve essere eseguito parzialmente.
+Usando i cambi di stato un pthread può, per esempio, ritardare l’effetto di pthread_cancel() per evitare di essere cancellato nel mezzo di un blocco di codice critico che non deve essere eseguito parzialmente.
 
 ### `pthresad_setcanceltype()`
 
@@ -791,7 +793,7 @@ Cambia il tipo di cancellazione del pthread.
 
 `int pthread_setcanceltype(int type, int *oldtype)`
 
-Un pthread può controllare i punti del codice in cui ha effetto la sua richiesta di cancellazione tramite i tipi `PTHREAD_CANCEL_ASYNCHRONOUS` che permette dal pthread di reagire alla cancellazione in qualsiasi istante, o `PTHREAD_CANCEL_DEFERRED`, scelta di default che permette di cancellare il pthread solo in specifici punti del codice detti _cancellation points_.
+Un pthread può controllare i punti del codice in cui ha effetto la sua richiesta di cancellazione tramite i tipi `PTHREAD_CANCEL_ASYNCHRONOUS` che permette al pthread di reagire alla cancellazione in qualsiasi istante, o `PTHREAD_CANCEL_DEFERRED`, scelta di default che permette di cancellare il pthread solo in specifici punti del codice detti _cancellation points_.
 
 ### `pthread_testcancel()`
 
@@ -799,7 +801,7 @@ Crea un cancellation point esplicito.
 
 `void pthread_testcancel(void)`
 
-Molti cancellation points sono impliciti
+Molti cancellation points sono impliciti.
 
 ### `pthread_attr_init()`
 
@@ -809,13 +811,13 @@ Specifica un _attributes object_ che modifica alcune proprietà del pthread. Que
 
 - `pthread_attr_t *attr`: _attribute object_
 
-Prima di usare `*attr` con `pthread_create()`è possibile modificarne gli attributi con le apposite funzioni.
+Prima di usare `*attr` con `pthread_create()` è possibile modificarne gli attributi con le apposite funzioni.
 
 ## Mutua esclusione
 
 I pthreads di un processo condividono le risorse allocate al processo, quindi è necessario avere dei meccanismi che ne regolino l'accesso o che eseguano sincronizzazione.
 
-I **mutex lock** garantiscono mutua esclusione grazie a variabili speciali che possono essere in stato di locked o unlocked: se un mutex è locked, allora esite un thread che ne detiene il lock. Ogni mutex ha una coda.
+I **mutex lock** garantiscono mutua esclusione grazie a variabili speciali che possono essere in stato di _locked_ o _unlocked_: se un mutex è locked, allora esite un thread che ne detiene il lock. Ogni mutex ha una coda.
 
 Le funzioni che operano sui mutex non sono interrompibili da segnali e non sono cancellation point.
 
@@ -846,7 +848,7 @@ Dealloca un mutex non più utiliizzato.
 
 ### `pthread_mutex_lock()`
 
-Chiamata bloccante. Se il mutex è in stato di lock, il pthread chiamante venen messo in coda di attesa.
+Chiamata bloccante. Se il mutex è in stato di lock, il pthread chiamante viene messo in coda di attesa.
 
 `pthread_mutex_lock(pthread_mutex_t *mutex)`
 
@@ -864,7 +866,7 @@ Rilascia il lock.
 
 ## Sincronizzazione nei pthread
 
-Le _condition variables_ sono utilizzate nello standard POSIX per implementare la sincronizzazione fra pthread. Una condition variable permete ad un pthread di sospendere l'esecuzione fino al verificarsi di un evento o di una condizione. Quando è in questo stato il pthread si trova in una codaassociata alla condition variable. Quando la l'evento o la condizione si verifica. Ad ogni risveglio il pthread deve verificare se la condizione si sia veramente verificata o se sia il caso di riaccodarsi. 
+Le _condition variables_ sono utilizzate nello standard POSIX per implementare la sincronizzazione fra pthread. Una condition variable permete ad un pthread di sospendere l'esecuzione fino al verificarsi di un evento o di una condizione. Quando è in questo stato il pthread si trova in una coda associata alla condition variable. Quando l'evento o la condizione si verifica il thread viene risveglaito. Ad ogni risveglio il pthread deve verificare se la condizione si sia veramente verificata o se sia il caso di riaccodarsi. 
 
 L'uso di una condition variable deve essere associato all'uso di un mutex lock.
 
@@ -894,7 +896,7 @@ Attesa del pthread sulla condition tramite il mutex associato.
 - `pthread_cond_t *restrict cond`: puntatore alla condition
 - `pthread_mutex_t *restrict mutex`: puntatore al mutex che protege la condition. Il lock deve essere stato preventivamente acquisito prima di usare `pthread_cond_wait()`.
 
-La chiamata causa in modo atomico la sospensione del pthread (viene inserito in una coda associata a `cond`) e il rilascio della lock sul mutex.
+La chiamata causa in modo atomico la sospensione del pthread (viene inserito in una coda associata a `cond`) e il rilascio del lock sul mutex.
 
 Al risveglio il pthread riacquisisce il lock sul mutex (o aspetta di poterlo fare). Successivamente deve rilasciarlo in maniera esplicita.
 
@@ -906,7 +908,7 @@ Risveglia tutti i pthread in attesa su una condizione.
 
 ### `pthread_cond_signal()`
 
-Risveglia almeno un pthread in attesa sulla condizione
+Risveglia almeno un pthread in attesa sulla condizione.
 
 `pthread_cond_signal(pthread_cond_t *cond)`
 
